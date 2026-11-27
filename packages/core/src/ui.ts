@@ -22,3 +22,18 @@ export {
   type MobileNavController,
 } from './mobile-nav'
 export { keepFocusClear } from './focus-clearance'
+export {
+  createPopover,
+  initPopovers,
+  destroyPopovers,
+  type PopoverController,
+  type PopoverCloseReason,
+  type PopoverState,
+} from './popover'
+export {
+  createMenu,
+  initMenus,
+  destroyMenus,
+  type MenuController,
+  type MenuSelectDetail,
+} from './menu'

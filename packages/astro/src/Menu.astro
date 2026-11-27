@@ -1,0 +1,110 @@
+---
+/**
+ * The action menu: a button and a popover of menu items, the @subfloor/core menu markup; the
+ * behaviour (the WAI-ARIA menu button keyboard) is the core's `createMenu`, loaded by the script
+ * below. A choice dispatches `sf:select` on the menu with the item's `value`.
+ */
+import type { HTMLAttributes } from 'astro/types'
+
+export type MenuItem =
+  | {
+      label: string
+      /** A link; otherwise a button whose choice is reported by `sf:select`. */
+      href?: string
+      /** Reported in `sf:select`; the label by default. */
+      value?: string
+      disabled?: boolean
+      /** Destructive: drawn in the danger colour. */
+      danger?: boolean
+    }
+  | 'separator'
+
+export interface Props extends Omit<HTMLAttributes<'div'>, 'popover'> {
+  id: string
+  /** The button's text (or use the `trigger` slot). */
+  label?: string
+  /** The menu's accessible name; the button's text by default. */
+  menuLabel?: string
+  items: MenuItem[]
+  placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end'
+  /** Classes for the button. */
+  triggerClass?: string
+  /** The button's accessible name, for a button with an icon only. */
+  triggerLabel?: string
+}
+
+const {
+  id,
+  label,
+  menuLabel,
+  items,
+  placement = 'bottom-start',
+  triggerClass,
+  triggerLabel,
+  class: className,
+  ...rest
+} = Astro.props
+const anchor = `--sf-anchor-${id}`
+---
+
+<button
+  type="button"
+  id={`${id}-trigger`}
+  class={triggerClass}
+  popovertarget={id}
+  aria-haspopup="menu"
+  aria-controls={id}
+  aria-label={triggerLabel}
+  style={`anchor-name: ${anchor}`}
+>
+  <slot name="trigger">{label}</slot>
+</button>
+<div
+  {...rest}
+  id={id}
+  popover="auto"
+  role="menu"
+  aria-label={menuLabel ?? triggerLabel ?? label}
+  class:list={['sf-popover', 'sf-menu', className]}
+  data-sf-menu=""
+  data-placement={placement}
+  style={`position-anchor: ${anchor}`}
+>
+  {items.map((item) =>
+    item === 'separator' ? (
+      <hr class="sf-menu__separator" role="separator" />
+    ) : item.href ? (
+      <a
+        class="sf-menu__item"
+        role="menuitem"
+        tabindex="-1"
+        href={item.href}
+        aria-disabled={item.disabled ? 'true' : undefined}
+        data-danger={item.danger ? '' : undefined}
+        data-value={item.value}
+      >
+        {item.label}
+      </a>
+    ) : (
+      <button
+        type="button"
+        class="sf-menu__item"
+        role="menuitem"
+        tabindex="-1"
+        aria-disabled={item.disabled ? 'true' : undefined}
+        data-danger={item.danger ? '' : undefined}
+        data-value={item.value}
+      >
+        {item.label}
+      </button>
+    ),
+  )}
+</div>
+
+<script>
+  import { destroyMenus, initMenus } from '@subfloor/core'
+
+  initMenus()
+  document.addEventListener('astro:before-swap', () => destroyMenus())
+  document.addEventListener('astro:page-load', () => initMenus())
+</script>

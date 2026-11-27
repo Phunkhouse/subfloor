@@ -122,3 +122,24 @@ test('modal: the backdrop closes it where closedby is supported', async ({
   await page.mouse.click(10, 10)
   await expect(dialog).toBeHidden()
 })
+
+test('popover: the button opens it below itself, Escape and an outside press close it', async ({
+  page,
+}) => {
+  await page.goto('/popover/')
+  const panel = page.locator('#filter-popover')
+  const trigger = page.locator('#filter-popover-trigger')
+  await expect(panel).toBeHidden()
+  await trigger.click()
+  await expect(panel).toBeVisible()
+  const t = (await trigger.boundingBox())!
+  const p = (await panel.boundingBox())!
+  expect(p.y).toBeGreaterThanOrEqual(t.y + t.height - 1)
+  expect(Math.abs(p.x - t.x)).toBeLessThan(2)
+  await page.keyboard.press('Escape')
+  await expect(panel).toBeHidden()
+  await trigger.click()
+  await expect(panel).toBeVisible()
+  await page.mouse.click(5, 5)
+  await expect(panel).toBeHidden()
+})

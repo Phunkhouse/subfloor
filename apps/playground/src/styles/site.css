@@ -78,7 +78,8 @@ main {
 
 /* Scoped to the demos: a global `button` rule would also restyle the kit's close button,
    because unlayered CSS beats @layer subfloor (that is the point of the layer). */
-:where(.demo, .card, .sf-dialog__footer) button,
+:where(.demo, .card, .sf-dialog__footer, .clip-box, .edge-row)
+  button:not(.sf-menu__item),
 .menu-toggle {
   min-height: 44px;
   padding: 0.5rem 1rem;
@@ -90,7 +91,8 @@ main {
   cursor: pointer;
 }
 
-:where(.demo, .card, .sf-dialog__footer) button.primary {
+:where(.demo, .card, .sf-dialog__footer, .clip-box, .edge-row)
+  button.primary:not(.sf-menu__item) {
   border-color: transparent;
   background: var(--sf-color-text);
   color: var(--sf-color-surface);

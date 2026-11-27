@@ -9,6 +9,8 @@
     "./Modal.astro": "./src/Modal.astro",
     "./Drawer.astro": "./src/Drawer.astro",
     "./MobileNav.astro": "./src/MobileNav.astro",
+    "./Popover.astro": "./src/Popover.astro",
+    "./Menu.astro": "./src/Menu.astro",
     "./package.json": "./package.json"
   },
   "files": [

@@ -1,0 +1,62 @@
+/*
+ * Menu: a popover (`.sf-popover.sf-menu`, `role="menu"`) of `role="menuitem"` buttons or links.
+ * Markup: see the playground's Popover and Menu page. Requirements: docs/SPEC.md (R-19).
+ */
+@layer subfloor {
+  .sf-menu {
+    display: none;
+    flex-direction: column;
+  }
+
+  .sf-menu:popover-open {
+    display: flex;
+  }
+
+  .sf-menu__item {
+    box-sizing: border-box;
+    display: flex;
+    gap: var(--sf-space-2);
+    align-items: center;
+    width: 100%;
+    min-height: var(--sf-touch-target);
+    padding: var(--sf-space-2) var(--sf-space-3);
+    border: 0;
+    border-radius: calc(var(--sf-radius-popover) - var(--sf-space-1) / 2);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .sf-menu__item:hover,
+  .sf-menu__item:focus-visible {
+    background: var(--sf-color-hover);
+  }
+
+  .sf-menu__item:focus-visible {
+    outline: 2px solid var(--sf-color-focus);
+    outline-offset: -2px;
+  }
+
+  .sf-menu__item[data-danger] {
+    color: var(--sf-color-danger);
+  }
+
+  .sf-menu__item[aria-disabled='true'] {
+    color: var(--sf-color-muted);
+    cursor: default;
+    opacity: 0.6;
+  }
+
+  .sf-menu__item[aria-disabled='true']:hover {
+    background: transparent;
+  }
+
+  .sf-menu__separator {
+    margin: var(--sf-space-1) 0;
+    border: 0;
+    border-top: var(--sf-border-width) solid var(--sf-color-border);
+  }
+}

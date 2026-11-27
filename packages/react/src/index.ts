@@ -13,4 +13,6 @@ export {
   type MobileNavLink,
   type MobileNavLinkProps,
 } from './MobileNav'
-export type { DialogCloseReason } from '@subfloor/core'
+export { Popover, type PopoverProps, type PopoverPlacement } from './Popover'
+export { Menu, type MenuProps, type MenuItem, type MenuLinkProps } from './Menu'
+export type { DialogCloseReason, PopoverCloseReason } from '@subfloor/core'

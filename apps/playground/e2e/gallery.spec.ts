@@ -14,3 +14,15 @@ for (const id of ['modal', 'drawer', 'sheet', 'mobile-nav']) {
     await expect(dialog).toBeHidden()
   })
 }
+
+test('overview: "Try it" opens the menu', async ({ page }) => {
+  await page.goto('/')
+  await page.waitForFunction(
+    () => !!document.querySelector('#gallery-menu[data-state]'),
+  )
+  await page.locator('#gallery-menu-trigger').click()
+  const menu = page.locator('#gallery-menu')
+  await expect(menu).toHaveAttribute('data-state', 'open')
+  await page.keyboard.press('Escape')
+  await expect(menu).toBeHidden()
+})

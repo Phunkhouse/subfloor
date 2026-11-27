@@ -1,0 +1,218 @@
+---
+import { Code } from 'astro:components'
+import Menu from '@subfloor/astro/Menu.astro'
+import Popover from '@subfloor/astro/Popover.astro'
+import Docs from '../layouts/Docs.astro'
+import Filler from '../components/Filler.astro'
+import ReactPopoverDemo from '../components/ReactPopoverDemo'
+import TokenTable from '../components/TokenTable.astro'
+import { url } from '../lib/url'
+
+const items = [
+  { label: 'Edit', value: 'edit' },
+  { label: 'Duplicate', value: 'duplicate' },
+  { label: 'Archive', value: 'archive', disabled: true },
+  { label: 'Open the Modal page', href: url('/modal/') },
+  'separator' as const,
+  { label: 'Delete', value: 'delete', danger: true },
+]
+
+const usage = `---
+import Menu from '@subfloor/astro/Menu.astro'
+import Popover from '@subfloor/astro/Popover.astro'
+---
+<Menu id="project-actions" label="Actions" items={[
+  { label: 'Edit', value: 'edit' },
+  { label: 'Archive', value: 'archive', disabled: true },
+  { label: 'Settings', href: '/settings/' },
+  'separator',
+  { label: 'Delete', value: 'delete', danger: true },
+]} />
+
+<!-- placement: "bottom-start" (default) | "bottom-end" | "top-start" | "top-end" -->
+<Popover id="filters" label="Filters" placement="bottom-end">
+  …
+</Popover>
+
+<script>
+  document.getElementById('project-actions')
+    ?.addEventListener('sf:select', (event) => console.log(event.detail.value))
+</script>`
+
+const react = `'use client'
+import { Menu, Popover } from '@subfloor/react'
+
+<Menu
+  label="Actions"
+  menuLabel="Project actions"
+  items={[
+    { label: 'Edit', onSelect: edit },
+    { label: 'Settings', href: '/settings' },
+    'separator',
+    { label: 'Delete', onSelect: remove, danger: true },
+  ]}
+  renderLink={(props) => <Link {...props} />}
+/>
+
+// Controlled: set open in onOpenChange. If open stays true after the user
+// closed it, it stays closed until open changes (as with Dialog).
+<Popover label="Filters" open={open} onOpenChange={(next) => setOpen(next)}>
+  …
+</Popover>`
+
+const markup = `<button type="button" popovertarget="actions" aria-haspopup="menu"
+  aria-controls="actions" style="anchor-name: --sf-anchor-actions">Actions</button>
+<div id="actions" popover="auto" role="menu" aria-label="Actions"
+  class="sf-popover sf-menu" data-sf-menu data-placement="bottom-start"
+  style="position-anchor: --sf-anchor-actions">
+  <button type="button" class="sf-menu__item" role="menuitem" tabindex="-1"
+    data-value="edit">Edit</button>
+  <a class="sf-menu__item" role="menuitem" tabindex="-1" href="/settings/">Settings</a>
+  <hr class="sf-menu__separator" role="separator">
+  <button type="button" class="sf-menu__item" role="menuitem" tabindex="-1"
+    data-danger>Delete</button>
+</div>`
+
+const custom = `.compact-menu {
+  --sf-popover-min-width: 9rem;
+  --sf-radius-popover: 4px;
+}`
+---
+
+<Docs
+  title="Popover and Menu"
+  description="A panel beside its button, in the top layer so nothing clips it. The menu adds the keyboard of an action menu."
+>
+  <section class="demo" aria-label="Demo">
+    <Menu
+      id="actions-menu"
+      label="Actions"
+      menuLabel="Project actions"
+      items={items}
+      triggerClass="primary"
+    />
+    <Popover id="filter-popover" label="Filters">
+      <form class="popover-form" onsubmit="return false">
+        <label>
+          <input type="checkbox" id="filter-open" /> Open only
+        </label>
+        <label>
+          Search <input id="filter-search" />
+        </label>
+      </form>
+    </Popover>
+    <button id="background-button" type="button">
+      A button on the page
+    </button>
+  </section>
+  <p>
+    Chosen: <output id="menu-log">none</output>
+  </p>
+
+  <h2>Inside a box that clips</h2>
+  <div class="clip-box" id="clip-box">
+    <Popover id="clipped-popover" label="Open from a clipped box">
+      <p class="popover-note">The box is 3.5rem tall with hidden overflow.</p>
+      <p class="popover-note">This panel is still whole.</p>
+    </Popover>
+  </div>
+
+  <h2>At the screen edge</h2>
+  <div class="edge-row">
+    <Popover id="edge-popover" label="Opens and flips">
+      <p class="popover-note">Asked to open towards the end, it flips.</p>
+    </Popover>
+  </div>
+
+  <h2>Astro</h2>
+  <Code code={usage} lang="astro" />
+
+  <h2>React</h2>
+  <Code code={react} lang="tsx" />
+  <ReactPopoverDemo client:load />
+
+  <h2>Markup</h2>
+  <p>
+    The button names itself with <code>anchor-name</code>, the panel points at
+    it with <code>position-anchor</code>; the components set both.
+  </p>
+  <Code code={markup} lang="html" />
+
+  <h2>Behaviour</h2>
+  <ul>
+    <li>
+      The panel is in the top layer: an <code>overflow</code> or
+      <code>transform</code> on the button's parents cannot clip it.
+    </li>
+    <li>
+      It opens beside its button and flips to the other side at a screen edge
+      (CSS anchor positioning, no script). Browsers without anchor positioning
+      (Safari before 26) show it as a sheet along the bottom.
+    </li>
+    <li>
+      An outside press or Escape closes it; the button closes it again. Escape
+      gives focus back to the button, an outside press leaves it where you
+      pressed. No scroll lock: it is not a modal.
+    </li>
+    <li>
+      The menu: Enter, Space, ↓ or a click open it on the first item, ↑ on the
+      last; ↓ ↑ wrap, Home End jump, letters jump to an item; Enter or Space
+      chooses and gives focus back to the button; Tab closes and moves on.
+      Disabled items are skipped. A choice dispatches <code>sf:select</code>.
+    </li>
+    <li>
+      <code>sf:open-change</code> reports each change with a reason:
+      <code>escape</code>, <code>outside</code>, <code>toggle</code>,
+      <code>select</code>, <code>tab</code> or <code>api</code>.
+    </li>
+  </ul>
+
+  <h2>Without JavaScript</h2>
+  <p>
+    The button opens and closes the panel (<code>popovertarget</code>), an
+    outside press and Escape close it, and CSS places it. The menu's arrow keys,
+    typeahead and <code>aria-expanded</code> need the script; Tab walks through
+    its items instead.
+  </p>
+
+  <h2>Customisation</h2>
+  <Code code={custom} lang="css" />
+  <TokenTable only={['popover', 'danger', 'overlay-gutter']} />
+
+  <h2>Background</h2>
+  <Filler />
+</Docs>
+
+<script>
+  const log = document.getElementById('menu-log')
+  const chosen: string[] = []
+  document
+    .getElementById('actions-menu')
+    ?.addEventListener('sf:select', (e) => {
+      chosen.push(e.detail.value)
+      if (log) log.textContent = chosen.join(', ')
+    })
+</script>
+
+<style>
+  .clip-box {
+    height: 3.5rem;
+    padding: 0.5rem;
+    overflow: hidden;
+    border: 1px dashed var(--sf-color-border);
+    border-radius: 12px;
+  }
+
+  .edge-row {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .popover-note {
+    margin: 0.5rem;
+  }
+
+  .popover-form {
+    padding: 0 0.5rem;
+  }
+</style>

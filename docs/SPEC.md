@@ -14,7 +14,7 @@ Users: the owner and the agents working in the owner's projects. Public on npm u
 
 - Monorepo: `@subfloor/core` (tokens, CSS, behaviour), `@subfloor/react`, `@subfloor/astro`, the playground (docs, demos, test target), Changesets, an `eject` command.
 - Tokens; **Modal** and **Drawer/Sheet** with core, React and Astro adapters and a playground page each.
-- Playwright on Chromium and WebKit, desktop and phone, proving R-01 to R-10 (R-11 to R-15 in Phase 2). Desktop Firefox added 2026-11-27 (SUB-14).
+- Playwright on Chromium and WebKit, desktop and phone, proving R-01 to R-10 (R-11 to R-15 in Phase 2, R-16 to R-21 in Phase 3). Desktop Firefox added 2026-11-27 (SUB-14).
 - `AGENTS.md` / `CLAUDE.md`, and a rules snippet for consuming projects ([consumer-rules.md](consumer-rules.md)).
 
 **Confirmed** (owner, 2026-11-27; plan approved the same day).
@@ -25,9 +25,13 @@ Scope approved by the owner on 2026-11-27. **Decided** (owner, 2026-11-27). A mo
 
 Not included: a top sheet under the bar and submenus (SUB-7), drag-to-close (SUB-13).
 
+### Phase 3: Popover and Menu (SUB-9, built, in review)
+
+Scope approved by the owner on 2026-11-27. **Decided** (owner, 2026-11-27; [0004](decisions/0004-native-popover-and-anchor-positioning.md)). A non-modal panel (`[popover][data-sf-popover]`, `createPopover`) and the action menu on it (`[data-sf-menu]`, `role="menu"`, `createMenu`), with React `Popover` and `Menu` and Astro `Popover.astro` and `Menu.astro`, a playground page and Playwright tests on all five projects. Requirements R-16 to R-21 below. Not included: select, listbox and combobox (SUB-12), submenus, opening on hover, a phone bottom-sheet variant.
+
 ### Out of scope now
 
-Popover/Dropdown, Toast, Tabs and form fields are later phases (SUB-9 to SUB-12 in the [Vikunja backlog](BACKLOG.md)); the API must leave room for them. Publishing to npm, creating the npm organisation and pushing to a remote happen only on the owner's word. **Confirmed** (owner, 2026-11-27).
+Toast, Tabs and form fields are later phases (SUB-10 to SUB-12 in the [Vikunja backlog](BACKLOG.md)); the API must leave room for them. Publishing to npm, creating the npm organisation and pushing to a remote happen only on the owner's word. **Confirmed** (owner, 2026-11-27).
 
 ## Research: pitfalls found in the owner's projects
 
@@ -43,7 +47,7 @@ Read on 2026-11-27, read-only: Kultomat, Systerna, eucal, david-krapka, job-assi
 | Exit animations kept the element with a timeout (`CLOSE_MS`). | Kultomat `header-menu.tsx`. | R-06 |
 | Focus return and containment hand-rolled differently in every menu; Safari does not focus a clicked button, so "the previously focused element" is the body. | eucal `useFocusTrap`; david-krapka sets `inert` on `main` and `footer` by hand (and broke the skip link, WEB-002); Kultomat's phone menu closes on focus loss (WEB-001). | R-07, R-08 |
 | A fixed bottom bar hides the focused control. | Systerna WEB-001. | R-15 |
-| Dropdowns inside a panel are clipped by its `overflow`; a snackbar must sit above the bottom bar. | Systerna `clipEdges`, `Snackbar` with `popover="manual"`. | Later (top layer for Popover and Toast) |
+| Dropdowns inside a panel are clipped by its `overflow`; a snackbar must sit above the bottom bar. | Systerna `clipEdges`, `Snackbar` with `popover="manual"`. | R-16, R-17; Toast later (SUB-10) |
 | jsdom has no `showModal`, so unit tests of dialogs test a fallback, not the browser. | Systerna `Dialog.tsx`. | D-03 |
 
 Components rebuilt in almost every project: dialog or sheet, phone menu, dropdown or menu, select, toast or snackbar, theme menu. They match the later phases.
@@ -67,6 +71,12 @@ Each is tested in `apps/playground/e2e/` (test names start with the id) on Chrom
 - **R-13 Closes when the window grows.** `data-sf-close-at="<media query>"` closes it (reason `api`) when the query starts to match, for example once the desktop layout applies. Already closed: nothing happens. An invalid query never matches, so it never closes the menu.
 - **R-14 Focus and inertness.** No hand-set `inert`. While the menu is open nothing behind it can get focus, including the skip link (david-krapka WEB-002, Kultomat WEB-001). On close, Escape, the close button, the backdrop, R-13 and a link to another page return focus to the toggle (R-07; after a router changed the page, without scrolling to it). An in-page link moves it to the link's target (R-12). If the browser loads a new page, that page decides. Once closed, the skip link works as usual.
 - **R-15 Fixed bars do not cover focus.** `--sf-fixed-top` and `--sf-fixed-bottom` set `scroll-padding` on the root, so Tab and in-page links keep focused controls and targets clear of fixed bars (Systerna WEB-001). It is in `@layer subfloor`, so a project's own `scroll-padding` wins; the playground page says to set the tokens instead. WebKit ignores `scroll-padding` when Tab scrolls, so the core's `keepFocusClear()` scrolls a keyboard-focused control that still sits in the padding once more with `scrollIntoView({ block: 'nearest' })`, which WebKit honours (SUB-6). Every mobile nav turns it on; a page without one calls `keepFocusClear()`. It does nothing where the browser already got it right, inside an open modal dialog, or without padding. Proven on all five projects.
+- **R-16 Never clipped (popover).** The panel is in the top layer: an `overflow` or `transform` on any ancestor of its button cannot clip it (Systerna's Impact list in the project panel).
+- **R-17 Anchored and kept on screen.** It opens beside its button (`data-placement`: `bottom-start` by default, `bottom-end`, `top-start`, `top-end`) and flips to the other side where it would cross the viewport edge, by CSS anchor positioning without script (Systerna `useFitInside`). Without anchor positioning (Safari before 26) it is a sheet along the bottom edge.
+- **R-18 Closing.** An outside press and Escape close it; pressing its button again closes it without reopening. Escape (and a menu choice) give focus back to the button, also in Safari; an outside press leaves focus where the user pressed. No scroll lock, no inert page: it is not modal.
+- **R-19 Menu keyboard (WAI-ARIA menu button).** Enter, Space, ↓ or a click open it with focus on the first item, ↑ on the last; ↓ ↑ wrap, Home End jump, typed letters move to the next matching item (a repeated letter cycles); Enter or Space choose; Escape closes and returns to the button; Tab closes and moves on. Disabled items (`aria-disabled="true"`) are skipped and cannot be chosen. A choice closes the menu (reason `select`), dispatches `sf:select` with the item's `data-value`, and links navigate.
+- **R-20 State.** The button's `aria-expanded` follows the panel; `sf:open-change` fires once per change with a reason (`escape`, `outside`, `toggle`, `select`, `tab`, `api`); `data-state` is `open`, `closing` or `closed`. Opening animates from `@starting-style`, closing with `allow-discrete` transitions; none under reduced motion. The React adapter reports only the user's changes.
+- **R-21 Without JavaScript (popover).** The button opens and closes it (`popovertarget`), an outside press and Escape close it, and CSS places it beside the button. The menu's arrow keys, typeahead and `aria-expanded` need the script.
 
 ## Data and trust boundaries
 
@@ -87,6 +97,7 @@ No data is stored and nothing runs on a server. The packages run in the consumin
 - D-02 Plan and research summary approved; prefix `sf`, MIT, Node 26 for the repo, drag-to-close for sheets deferred. Owner, 2026-11-27 (defaults stated in the plan, not objected to).
 - D-03 Dialog behaviour is tested in real browsers only; jsdom lacks `showModal`. Agent, 2026-11-27.
 - D-04 Records [0001](decisions/0001-one-native-dialog.md), [0002](decisions/0002-scroll-lock.md), [0003](decisions/0003-native-focus-containment.md). Agent, 2026-11-27; for the owner's review.
+- D-05 Record [0004](decisions/0004-native-popover-and-anchor-positioning.md): native popover and CSS anchor positioning for panels and menus. Scope approved by the owner, 2026-11-27.
 
 ## Known limitations and risks
 

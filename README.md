@@ -2,16 +2,16 @@
 
 A native-first UI foundation for the owner's projects (Next.js and Astro today). Like a subfloor, it is the layer under the visible design: overlays that do not let the page scroll behind them, keep focus where it belongs and work before JavaScript arrives. A fix made here reaches every project.
 
-It has **Modal**, **Drawer/Sheet** and **Mobile nav**. Popover/dropdown, toast, tabs and form fields come later (the [backlog](docs/BACKLOG.md) is in Vikunja).
+It has **Modal**, **Drawer/Sheet**, **Mobile nav**, **Popover** and **Menu**. Toast, tabs and form fields come later (the [backlog](docs/BACKLOG.md) is in Vikunja).
 
 ## Packages
 
-| Package           | What it is                                                                                                                                                                                               |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@subfloor/core`  | `tokens.css`, `components.css`, optional `tailwind.css`, and the behaviour (`createDialog`, `initDialogs`, `createMobileNav`, `lockScroll`). No runtime dependencies. Also the `subfloor eject` command. |
-| `@subfloor/react` | `Dialog`, `Modal`, `Drawer`, `MobileNav` for React 19; works in the Next.js App Router.                                                                                                                  |
-| `@subfloor/astro` | `Dialog.astro`, `Modal.astro`, `Drawer.astro`, `MobileNav.astro`, shipped as source.                                                                                                                     |
-| `apps/playground` | Docs and live demos of every component, and the Playwright test target.                                                                                                                                  |
+| Package           | What it is                                                                                                                                                                                                                              |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@subfloor/core`  | `tokens.css`, `components.css`, optional `tailwind.css`, and the behaviour (`createDialog`, `initDialogs`, `createMobileNav`, `createPopover`, `createMenu`, `lockScroll`). No runtime dependencies. Also the `subfloor eject` command. |
+| `@subfloor/react` | `Dialog`, `Modal`, `Drawer`, `MobileNav`, `Popover`, `Menu` for React 19; works in the Next.js App Router.                                                                                                                              |
+| `@subfloor/astro` | `Dialog.astro`, `Modal.astro`, `Drawer.astro`, `MobileNav.astro`, `Popover.astro`, `Menu.astro`, shipped as source.                                                                                                                     |
+| `apps/playground` | Docs and live demos of every component, and the Playwright test target.                                                                                                                                                                 |
 
 **Live playground: https://phunkhouse.github.io/subfloor/**. Usage, markup, tokens and customisation for each component are there, starting with a visual overview of the components. GitHub Pages publishes it from `main` (`.github/workflows/pages.yml`). The packages are not on npm yet.
 
@@ -53,7 +53,7 @@ All commands are listed in [AGENTS.md](AGENTS.md#commands).
 - **One core, thin adapters.** Modal, Drawer and Sheet are one dialog with `data-placement`; the mobile nav is that dialog plus `createMobileNav` (links close it, in-page links land, `closeAt`). React and Astro only render the markup and call the core.
 - **Customise without forking.** Every value is a `--sf-*` token; all kit CSS is in `@layer subfloor`, so project CSS and Tailwind utilities win without `!important`. `subfloor eject dialog --adapter react` copies the source when a project truly must diverge.
 
-The requirements (R-01 to R-15) came from pitfalls found in Kultomat, Systerna and the other projects; they and their tests are in the [specification](docs/SPEC.md).
+The requirements (R-01 to R-21) came from pitfalls found in Kultomat, Systerna and the other projects; they and their tests are in the [specification](docs/SPEC.md).
 
 ## Decisions and trade-offs
 

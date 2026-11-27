@@ -1,0 +1,58 @@
+---
+/**
+ * A button and the non-modal panel it opens: the @subfloor/core popover markup; the behaviour is
+ * the core's `createPopover`, loaded by the script below. Without JavaScript the button still
+ * opens and closes it (`popovertarget`), and an outside press or Escape closes it.
+ */
+import type { HTMLAttributes } from 'astro/types'
+
+export interface Props extends Omit<HTMLAttributes<'div'>, 'popover'> {
+  id: string
+  /** The button's text (or use the `trigger` slot). */
+  label?: string
+  /** Where it opens; it flips at a screen edge. */
+  placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end'
+  /** Classes for the button. */
+  triggerClass?: string
+}
+
+const {
+  id,
+  label,
+  placement = 'bottom-start',
+  triggerClass,
+  class: className,
+  ...rest
+} = Astro.props
+const anchor = `--sf-anchor-${id}`
+---
+
+<button
+  type="button"
+  id={`${id}-trigger`}
+  class={triggerClass}
+  popovertarget={id}
+  aria-controls={id}
+  style={`anchor-name: ${anchor}`}
+>
+  <slot name="trigger">{label}</slot>
+</button>
+<div
+  {...rest}
+  id={id}
+  popover="auto"
+  class:list={['sf-popover', className]}
+  data-sf-popover=""
+  data-placement={placement}
+  style={`position-anchor: ${anchor}`}
+>
+  <slot />
+</div>
+
+<script>
+  import { destroyPopovers, initPopovers } from '@subfloor/core'
+
+  initPopovers()
+  document.addEventListener('astro:before-swap', () => destroyPopovers())
+  document.addEventListener('astro:page-load', () => initPopovers())
+</script>
