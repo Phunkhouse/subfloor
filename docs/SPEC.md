@@ -23,11 +23,11 @@ Users: the owner and the agents working in the owner's projects. Public on npm u
 
 Scope approved by the owner on 2026-11-27. **Decided** (owner, 2026-11-27). A modal phone menu that is the Phase 1 dialog plus a thin core layer: `createMobileNav` / `initMobileNavs` / `destroyMobileNavs` on `dialog[data-sf-mobile-nav]`, `data-placement="start|end"` (default `end`), links in `ul.sf-mobile-nav__list` inside `nav.sf-mobile-nav__nav`, a new close reason `navigate`, tokens `--sf-mobile-nav-width`, `--sf-color-current`, `--sf-fixed-top` / `--sf-fixed-bottom`, React `MobileNav` (with `renderLink` for a router's `Link`) and Astro `MobileNav.astro`, a playground page, and Playwright tests on all four projects. Requirements R-11 to R-15 below.
 
-Not included: a top sheet under the bar, submenus, drag-to-close ([BACKLOG.md](BACKLOG.md)).
+Not included: a top sheet under the bar and submenus (SUB-7), drag-to-close (SUB-13).
 
 ### Out of scope now
 
-Popover/Dropdown, Toast, Tabs and form fields are later phases ([BACKLOG.md](BACKLOG.md)); the API must leave room for them. Publishing to npm, creating the npm organisation and pushing to a remote happen only on the owner's word. **Confirmed** (owner, 2026-11-27).
+Popover/Dropdown, Toast, Tabs and form fields are later phases (SUB-9 to SUB-12 in the [Vikunja backlog](BACKLOG.md)); the API must leave room for them. Publishing to npm, creating the npm organisation and pushing to a remote happen only on the owner's word. **Confirmed** (owner, 2026-11-27).
 
 ## Research: pitfalls found in the owner's projects
 
@@ -90,7 +90,7 @@ No data is stored and nothing runs on a server. The packages run in the consumin
 
 ## Known limitations and risks
 
-- WebKit (Safari) ignores `scroll-padding` when Tab moves focus to a control: it scrolls the control only to the viewport edge, under a fixed bar, while `scrollIntoView` honours the padding. R-15 holds in Chromium and is skipped in WebKit with this reason. A script fix (scroll the focused control into view on `focusin`) would be a page-wide listener; it is proposed in the backlog, not built. Safari's Tab reaches only form fields unless the user turns on full keyboard access.
+- WebKit (Safari) ignores `scroll-padding` when Tab moves focus to a control: it scrolls the control only to the viewport edge, under a fixed bar, while `scrollIntoView` honours the padding. R-15 holds in Chromium and is skipped in WebKit with this reason. A script fix (scroll the focused control into view on `focusin`) would be a page-wide listener; it is task SUB-6, not built. Safari's Tab reaches only form fields unless the user turns on full keyboard access.
 - The `navigate` close cannot tell a full page load from a client-side route before the URL changes. A router that changes the URL after the closing transition (slow data loading) gets the old offset back and then has to scroll to the top itself; Next.js is expected to (O-07).
 - Playwright WebKit is not iOS Safari. The phone tests prove the body is pinned (the page cannot move even by script) and the offset is restored, which is what stops iOS touch scrolling, but no test drives a real finger in iOS Safari. Mobile Chromium runs a real touch scroll gesture. The manual phone check is in [design/README.md](design/README.md#manual-check-on-a-phone).
 - On macOS, WebKit keeps overlay scrollbars even when styled, so R-02 is skipped there and proven in Chromium (and in WebKit on Linux CI if it shows classic scrollbars).

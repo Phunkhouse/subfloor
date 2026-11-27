@@ -2,7 +2,7 @@
 
 A native-first UI foundation for the owner's projects (Next.js and Astro today). Like a subfloor, it is the layer under the visible design: overlays that do not let the page scroll behind them, keep focus where it belongs and work before JavaScript arrives. A fix made here reaches every project.
 
-It has **Modal**, **Drawer/Sheet** and **Mobile nav**. Popover/dropdown, toast, tabs and form fields come later ([backlog](docs/BACKLOG.md)).
+It has **Modal**, **Drawer/Sheet** and **Mobile nav**. Popover/dropdown, toast, tabs and form fields come later (the [backlog](docs/BACKLOG.md) is in Vikunja).
 
 ## Packages
 

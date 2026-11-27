@@ -13,12 +13,12 @@ Phase 2, the mobile nav ([SPEC, Phase 2](SPEC.md#phase-2-mobile-nav-built-in-rev
 - Built on branch `feat/mobile-nav`, PR open for the owner's review. Core `createMobileNav` / `initMobileNavs` / `destroyMobileNavs`, CSS and tokens; React `MobileNav` (`renderLink` for a router's `Link`); Astro `MobileNav.astro`; playground page `/mobile-nav/` and a gallery card; `subfloor eject mobile-nav`; changeset (minor for all three packages).
 - Core changes under it: close reason `navigate`; `lockScroll()`'s release takes `{ restore }`; an internal close with options (no focus return, no scroll restore), not exported.
 - Changed from the approved wording, for the owner: a link to another page returns focus to the toggle (Chromium's native close does that anyway; WebKit would leave it on the body), without scrolling to it after a router changed the page.
-- Known gap: WebKit ignores `scroll-padding` when Tab scrolls, so R-15 holds in Chromium only; a script fix is proposed in the backlog.
+- Known gap: WebKit ignores `scroll-padding` when Tab scrolls, so R-15 holds in Chromium only; a script fix is SUB-6 in Vikunja.
 - Phase 1 is on `main` and live at https://phunkhouse.github.io/subfloor/. Not on npm. Claude PR reviews work (`@claude review`).
 
 ## Next step
 
-Owner reviews the mobile nav PR (and may ask `@claude review`). Then O-07: try `MobileNav` with `next/link` in a Next.js project.
+Owner reviews the mobile nav PR (and may ask `@claude review`). The backlog is now in Vikunja (project `SUB`, Backlog column, SUB-2 to SUB-14; AGENTS.md Task queue); the owner orders it and picks what comes next.
 
 ## Blockers and open questions
 
