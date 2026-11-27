@@ -8,15 +8,46 @@ import { fileURLToPath } from 'node:url'
 
 const coreDir = join(dirname(fileURLToPath(import.meta.url)), '..')
 
-/** What each component consists of, per package. Modal, Drawer and Sheet are one dialog. */
+/**
+ * What each component consists of, per package. Modal, Drawer and Sheet are one dialog; the mobile
+ * nav is the dialog plus its own files. `entry` is the core module an adapter file of that
+ * component imports instead of `@subfloor/core` once copied.
+ */
 export const COMPONENTS = {
   dialog: {
+    entry: './dialog',
     core: ['src/dialog.ts', 'src/scroll-lock.ts', 'src/styles/dialog.css'],
     react: ['src/Dialog.tsx'],
     astro: ['src/Dialog.astro', 'src/Modal.astro', 'src/Drawer.astro'],
   },
+  'mobile-nav': {
+    entry: './mobile-nav',
+    core: [
+      'src/mobile-nav.ts',
+      'src/dialog.ts',
+      'src/scroll-lock.ts',
+      'src/styles/dialog.css',
+      'src/styles/mobile-nav.css',
+    ],
+    react: ['src/Dialog.tsx', 'src/MobileNav.tsx'],
+    astro: ['src/Dialog.astro', 'src/MobileNav.astro'],
+  },
 }
-const ALIASES = { modal: 'dialog', drawer: 'dialog', sheet: 'dialog' }
+const ALIASES = {
+  modal: 'dialog',
+  drawer: 'dialog',
+  sheet: 'dialog',
+  nav: 'mobile-nav',
+}
+
+/** The entry of the first component that lists a file: Dialog.tsx belongs to the dialog. */
+function entryOf(file) {
+  for (const parts of Object.values(COMPONENTS)) {
+    if (ADAPTERS.some((adapter) => parts[adapter].includes(file)))
+      return parts.entry
+  }
+  return './dialog'
+}
 export const ADAPTERS = ['react', 'astro']
 
 /**
@@ -57,14 +88,19 @@ export async function eject({
         ),
       )
     sources.push(
-      ...parts[adapter].map((file) => ({ from: join(dir, file), file })),
+      ...parts[adapter].map((file) => ({
+        from: join(dir, file),
+        file,
+        entry: entryOf(file),
+      })),
     )
   }
 
   const written = []
-  for (const { from, file } of sources) {
+  for (const { from, file, entry } of sources) {
     let text = await readFile(from, 'utf8')
-    text = text.replaceAll(/from '@subfloor\/core'/g, "from './dialog'")
+    if (entry)
+      text = text.replaceAll(/from '@subfloor\/core'/g, `from '${entry}'`)
     const to = join(target, file.split('/').at(-1))
     await writeFile(to, text)
     written.push(relative(cwd, to))

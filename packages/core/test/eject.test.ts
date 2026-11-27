@@ -42,6 +42,31 @@ describe('eject', () => {
     expect(copied).not.toMatch(/from '@subfloor\/core'/)
   })
 
+  it('copies the mobile nav with the dialog under it, each adapter file importing its own module', async () => {
+    cwd = await mkdtemp(join(tmpdir(), 'subfloor-eject-'))
+    const written: string[] = await eject({
+      component: 'mobile-nav',
+      adapter: 'react',
+      cwd,
+      adapterDir: reactDir,
+    })
+    const dir = join(cwd, 'src', 'subfloor', 'mobile-nav')
+    expect(written.map((f) => f.split(/[\\/]/).at(-1)).sort()).toEqual([
+      'Dialog.tsx',
+      'MobileNav.tsx',
+      'dialog.css',
+      'dialog.ts',
+      'mobile-nav.css',
+      'mobile-nav.ts',
+      'scroll-lock.ts',
+    ])
+    const nav = await readFile(join(dir, 'MobileNav.tsx'), 'utf8')
+    expect(nav).toContain("from './mobile-nav'")
+    const dialog = await readFile(join(dir, 'Dialog.tsx'), 'utf8')
+    expect(dialog).toContain("from './dialog'")
+    expect(nav + dialog).not.toMatch(/from '@subfloor\/core'/)
+  })
+
   it('refuses an unknown component or adapter', async () => {
     cwd = await mkdtemp(join(tmpdir(), 'subfloor-eject-'))
     await expect(eject({ component: 'carousel', cwd })).rejects.toThrow(

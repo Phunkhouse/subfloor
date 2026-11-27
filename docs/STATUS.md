@@ -2,33 +2,34 @@
 
 Rewritten, not appended, at every handoff and whenever the state changes materially. Under one page; history lives in Git.
 
-Updated: 2026-11-27 13:50 CET by Claude (agent)
+Updated: 2026-11-27 14:20 CET by Claude (agent)
 
 ## Goal
 
-Phase 2, the mobile nav, whose scope the owner approved on 2026-11-27 ([SPEC, Phase 2](SPEC.md#phase-2-mobile-nav-approved-not-started)).
+Phase 2, the mobile nav ([SPEC, Phase 2](SPEC.md#phase-2-mobile-nav-built-in-review); R-11 to R-15).
 
 ## State
 
-- Phase 1 (Modal, Drawer/Sheet, tokens, React and Astro adapters, playground) is on `main` and live at https://phunkhouse.github.io/subfloor/. Not on npm.
-- Claude PR reviews work: the app is installed, the secret set, and `@claude review` posted a review on #5 (run 46000580652). This PR pins `claude-code-action` to the v1.0.290 commit `4411a9e` (checked against the upstream tag). The pin is used from the first review after the merge.
-- Dependabot skips TypeScript 7 (#3); `@types/node` 26.6.6 merged (#4).
-- Mobile nav: scope and R-11 to R-15 in SPEC, refined after Claude's review (where focus goes on each close, R-13 edge cases, R-15 and a project's own `scroll-padding`). No code yet.
+- Built on branch `feat/mobile-nav`, PR open for the owner's review. Core `createMobileNav` / `initMobileNavs` / `destroyMobileNavs`, CSS and tokens; React `MobileNav` (`renderLink` for a router's `Link`); Astro `MobileNav.astro`; playground page `/mobile-nav/` and a gallery card; `subfloor eject mobile-nav`; changeset (minor for all three packages).
+- Core changes under it: close reason `navigate`; `lockScroll()`'s release takes `{ restore }`; an internal close with options (no focus return, no scroll restore), not exported.
+- Changed from the approved wording, for the owner: a link to another page returns focus to the toggle (Chromium's native close does that anyway; WebKit would leave it on the body), without scrolling to it after a router changed the page.
+- Known gap: WebKit ignores `scroll-padding` when Tab scrolls, so R-15 holds in Chromium only; a script fix is SUB-6 in Vikunja.
+- Phase 1 is on `main` and live at https://phunkhouse.github.io/subfloor/. Not on npm. Claude PR reviews work (`@claude review`).
 
 ## Next step
 
-Owner merges #5. Then build the mobile nav in one PR: core, adapters, playground page, tests for R-11 to R-15 on all four projects.
+Owner reviews the mobile nav PR (and may ask `@claude review`). The backlog is now in Vikunja (project `SUB`, Backlog column, SUB-2 to SUB-14; AGENTS.md Task queue); the owner orders it and picks what comes next.
 
 ## Blockers and open questions
 
 - Owner: is the `@subfloor` npm scope free (O-04)? Confirm the browser support floor (O-03).
-- Manual iPhone check of the scroll lock not done yet (O-01, O-02).
+- Manual iPhone check of the scroll lock not done yet (O-01, O-02); it now covers the mobile nav too.
 - Owner review: decision 0003 keeps native focus containment rather than a scripted wrap.
 
 ## Last verified
 
-- Commands: `pnpm verify`.
-- Revision: `main` at `a728c7d` plus this PR's commits, which change only `claude.yml` and `docs/`.
-- Working tree: clean apart from this PR's last docs commit.
-- Result: verify passed (format, lint, typecheck, 8 unit tests, build). E2E: passed in CI on this PR before the rebase; no product code changed.
-- Not run: the pinned action, which runs only after the merge; Firefox; a real phone.
+- Commands: `pnpm verify`; `pnpm test:e2e` (all four projects); mutation checks in Chromium and WebKit, one per requirement.
+- Revision: `main` at `568dcba` plus the branch's uncommitted changes (this PR's content).
+- Working tree: the mobile nav changes, before the commit.
+- Result: verify passed (10 unit tests). E2E: 199 passed, 21 skipped with reasons (R-02 on phones and macOS WebKit, R-05 wheel and R-11 modifier click on phones, R-15 in WebKit). Mutation checks: no URL check fails R-11, no in-page handling fails R-12, no `closeAt` listener fails R-13, no `scroll-padding` fails R-15 (Chromium).
+- Not run: Firefox, a real phone, a Next.js app (O-07).

@@ -2,16 +2,16 @@
 
 A native-first UI foundation for the owner's projects (Next.js and Astro today). Like a subfloor, it is the layer under the visible design: overlays that do not let the page scroll behind them, keep focus where it belongs and work before JavaScript arrives. A fix made here reaches every project.
 
-Phase 1 has **Modal** and **Drawer/Sheet**. Mobile nav, popover/dropdown, toast, tabs and form fields come later ([backlog](docs/BACKLOG.md)).
+It has **Modal**, **Drawer/Sheet** and **Mobile nav**. Popover/dropdown, toast, tabs and form fields come later (the [backlog](docs/BACKLOG.md) is in Vikunja).
 
 ## Packages
 
-| Package           | What it is                                                                                                                                                                            |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@subfloor/core`  | `tokens.css`, `components.css`, optional `tailwind.css`, and the behaviour (`createDialog`, `initDialogs`, `lockScroll`). No runtime dependencies. Also the `subfloor eject` command. |
-| `@subfloor/react` | `Dialog`, `Modal`, `Drawer` for React 19; works in the Next.js App Router.                                                                                                            |
-| `@subfloor/astro` | `Dialog.astro`, `Modal.astro`, `Drawer.astro`, shipped as source.                                                                                                                     |
-| `apps/playground` | Docs and live demos of every component, and the Playwright test target.                                                                                                               |
+| Package           | What it is                                                                                                                                                                                               |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@subfloor/core`  | `tokens.css`, `components.css`, optional `tailwind.css`, and the behaviour (`createDialog`, `initDialogs`, `createMobileNav`, `lockScroll`). No runtime dependencies. Also the `subfloor eject` command. |
+| `@subfloor/react` | `Dialog`, `Modal`, `Drawer`, `MobileNav` for React 19; works in the Next.js App Router.                                                                                                                  |
+| `@subfloor/astro` | `Dialog.astro`, `Modal.astro`, `Drawer.astro`, `MobileNav.astro`, shipped as source.                                                                                                                     |
+| `apps/playground` | Docs and live demos of every component, and the Playwright test target.                                                                                                                                  |
 
 Not published yet. Usage, markup, tokens and customisation for each component are in the playground, which opens with a visual overview of the components. GitHub Pages publishes it from `main` once the repository exists (`.github/workflows/pages.yml`).
 
@@ -50,10 +50,10 @@ All commands are listed in [AGENTS.md](AGENTS.md#commands).
 ## How it works
 
 - **Native first.** A modal `<dialog>` gives the top layer, the inert page, Escape and focus containment. Invoker Commands (`command="show-modal"`) open it without script, `<form method="dialog">` closes it, and CSS (`:root:has(:modal)`) locks the page. About 200 lines of TypeScript add what the platform lacks: body pinning for iOS touch scrolling, a backdrop click that ignores drags, one `sf:open-change` event per change, `data-state` with a real closing transition, and focus back on the opener in Safari.
-- **One core, thin adapters.** Modal, Drawer and Sheet are one dialog with `data-placement`. React and Astro only render its markup and call `createDialog`.
+- **One core, thin adapters.** Modal, Drawer and Sheet are one dialog with `data-placement`; the mobile nav is that dialog plus `createMobileNav` (links close it, in-page links land, `closeAt`). React and Astro only render the markup and call the core.
 - **Customise without forking.** Every value is a `--sf-*` token; all kit CSS is in `@layer subfloor`, so project CSS and Tailwind utilities win without `!important`. `subfloor eject dialog --adapter react` copies the source when a project truly must diverge.
 
-The requirements (R-01 to R-10) came from pitfalls found in Kultomat, Systerna and the other projects; they and their tests are in the [specification](docs/SPEC.md).
+The requirements (R-01 to R-15) came from pitfalls found in Kultomat, Systerna and the other projects; they and their tests are in the [specification](docs/SPEC.md).
 
 ## Decisions and trade-offs
 

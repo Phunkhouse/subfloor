@@ -19,7 +19,9 @@ import { lockScroll } from './scroll-lock'
  * `commandfor` buttons open it, `<form method="dialog">` closes it, and CSS locks the page.
  */
 
-export type DialogCloseReason = 'escape' | 'backdrop' | 'button' | 'api'
+/** `navigate`: a link in a mobile nav was followed (R-11). */
+export type DialogCloseReason =
+  'escape' | 'backdrop' | 'button' | 'api' | 'navigate'
 export type DialogState = 'open' | 'closing' | 'closed'
 
 export interface OpenChangeDetail {
@@ -51,7 +53,24 @@ interface CommandLikeEvent extends Event {
   source: Element | null
 }
 
+/** How a close ends; only other core modules (the mobile nav) ask for anything but the default. */
+export interface CloseOptions {
+  /** Give focus back to the opener. */
+  returnFocus: boolean
+  /** Asked when the dialog leaves the page: scroll the page back to where it was? */
+  restoreScroll: () => boolean
+}
+
+const DEFAULT_CLOSE: CloseOptions = {
+  returnFocus: true,
+  restoreScroll: () => true,
+}
+
 const controllers = new WeakMap<HTMLDialogElement, DialogController>()
+const closers = new WeakMap<
+  DialogController,
+  (reason: DialogCloseReason, options: CloseOptions) => Promise<void>
+>()
 const live = new Set<DialogController>()
 
 /** The element the last pointer press landed on: Safari does not focus a clicked button. */
@@ -123,7 +142,8 @@ export function createDialog(dialog: HTMLDialogElement): DialogController {
   const abort = new AbortController()
   const on = { signal: abort.signal }
   let state: DialogState = dialog.open ? 'open' : 'closed'
-  let release: (() => void) | null = null
+  let release: ReturnType<typeof lockScroll> | null = null
+  let closing: CloseOptions = DEFAULT_CLOSE
   let returnFocus: HTMLElement | null = null
   let pressedOnBackdrop = false
   let closeRun = 0
@@ -137,13 +157,32 @@ export function createDialog(dialog: HTMLDialogElement): DialogController {
 
   /** The dialog leaves the page: release the page, then give focus back. */
   const finish = () => {
+    const { returnFocus: focusBack, restoreScroll } = closing
+    closing = DEFAULT_CLOSE
     setState('closed')
-    release?.()
+    const restore = restoreScroll()
+    release?.({ restore })
     release = null
     if (dialog.open) dialog.close()
     const target = returnFocus
     returnFocus = null
-    if (target?.isConnected && document.activeElement !== target) target.focus()
+    // A page left at the top (a router moved on) must not scroll back to the opener.
+    if (focusBack && target?.isConnected && document.activeElement !== target)
+      target.focus({ preventScroll: !restore })
+  }
+
+  const closeWith = async (
+    reason: DialogCloseReason,
+    options: CloseOptions,
+  ) => {
+    if (state !== 'open') return
+    const run = ++closeRun
+    closing = options
+    setState('closing')
+    emit({ open: false, reason })
+    await transitionsDone(dialog)
+    // Read through the getter: the state may have changed while waiting.
+    if (run === closeRun && controller.state === 'closing') finish()
   }
 
   const controller: DialogController = {
@@ -156,6 +195,7 @@ export function createDialog(dialog: HTMLDialogElement): DialogController {
       if (state === 'closing') {
         // Opened again while closing: it never left the page.
         closeRun++
+        closing = DEFAULT_CLOSE
         setState('open')
         emit({ open: true })
         return
@@ -171,14 +211,8 @@ export function createDialog(dialog: HTMLDialogElement): DialogController {
       setState('open')
       emit({ open: true })
     },
-    async close(reason = 'api') {
-      if (state !== 'open') return
-      const run = ++closeRun
-      setState('closing')
-      emit({ open: false, reason })
-      await transitionsDone(dialog)
-      // Read through the getter: the state may have changed while waiting.
-      if (run === closeRun && controller.state === 'closing') finish()
+    close(reason = 'api') {
+      return closeWith(reason, DEFAULT_CLOSE)
     },
     destroy() {
       abort.abort()
@@ -263,8 +297,18 @@ export function createDialog(dialog: HTMLDialogElement): DialogController {
   if (state === 'open' && dialog.matches(':modal')) release = lockScroll()
 
   controllers.set(dialog, controller)
+  closers.set(controller, closeWith)
   live.add(controller)
   return controller
+}
+
+/** Closes with options the public `close` does not offer. Not exported from the package. */
+export function closeDialog(
+  controller: DialogController,
+  reason: DialogCloseReason,
+  options: CloseOptions,
+): Promise<void> {
+  return closers.get(controller)?.(reason, options) ?? Promise.resolve()
 }
 
 /** The controller of a dialog, if it has one. */

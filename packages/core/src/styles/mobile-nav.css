@@ -1,0 +1,52 @@
+/*
+ * Mobile nav: the dialog (data-placement="start" | "end") holding a list of links.
+ * Markup: see the playground's Mobile nav page. Requirements: docs/SPEC.md (R-11 to R-15).
+ */
+@layer subfloor {
+  /* Tab, in-page links and scrollIntoView keep clear of fixed bars (R-15). Your own
+     `scroll-padding` wins over this; set the tokens instead to keep both in step. */
+  :root {
+    scroll-padding-block: var(--sf-fixed-top) var(--sf-fixed-bottom);
+  }
+
+  .sf-dialog.sf-mobile-nav {
+    width: min(var(--sf-mobile-nav-width), 100%);
+  }
+
+  .sf-mobile-nav .sf-dialog__body {
+    padding: var(--sf-space-2) var(--sf-space-3);
+    padding-bottom: max(var(--sf-space-2), env(safe-area-inset-bottom, 0));
+  }
+
+  .sf-mobile-nav__list {
+    display: grid;
+    gap: var(--sf-space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sf-mobile-nav__link {
+    display: flex;
+    min-height: var(--sf-touch-target);
+    align-items: center;
+    padding: var(--sf-space-2) var(--sf-space-3);
+    border-radius: var(--sf-radius-control);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .sf-mobile-nav__link:hover {
+    background: var(--sf-color-hover);
+  }
+
+  .sf-mobile-nav__link:focus-visible {
+    outline: 2px solid var(--sf-color-focus);
+    outline-offset: -2px;
+  }
+
+  .sf-mobile-nav__link[aria-current='page'] {
+    background: var(--sf-color-current);
+    font-weight: var(--sf-title-weight);
+  }
+}
