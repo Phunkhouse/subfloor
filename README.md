@@ -13,7 +13,7 @@ It has **Modal**, **Drawer/Sheet** and **Mobile nav**. Popover/dropdown, toast, 
 | `@subfloor/astro` | `Dialog.astro`, `Modal.astro`, `Drawer.astro`, `MobileNav.astro`, shipped as source.                                                                                                                     |
 | `apps/playground` | Docs and live demos of every component, and the Playwright test target.                                                                                                                                  |
 
-Not published yet. Usage, markup, tokens and customisation for each component are in the playground, which opens with a visual overview of the components. GitHub Pages publishes it from `main` once the repository exists (`.github/workflows/pages.yml`).
+**Live playground: https://phunkhouse.github.io/subfloor/**. Usage, markup, tokens and customisation for each component are there, starting with a visual overview of the components. GitHub Pages publishes it from `main` (`.github/workflows/pages.yml`). The packages are not on npm yet.
 
 ```css
 @import '@subfloor/core/tokens.css';
