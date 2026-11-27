@@ -68,6 +68,28 @@ test('R-11: with a client-side router it closes with "navigate" and the new page
   await expect(page.locator('#react-open-nav')).toBeFocused()
 })
 
+test('R-11: closed by keyboard while still opening, the new page stays at the top and the toggle gets focus', async ({
+  page,
+}) => {
+  // Closed before any closing transition runs, so the close must still see the router's new URL.
+  // And keyboard focus on the toggle is :focus-visible: R-15's keepFocusClear must not scroll to
+  // it, because it was focused without scrolling, out of view on purpose (CI failure on PR #8).
+  await load(page)
+  const toggle = page.locator('#react-open-nav')
+  await toggle.scrollIntoViewIfNeeded()
+  await toggle.focus()
+  await page.keyboard.press('Enter')
+  const dialog = page.locator('#react-nav')
+  await expect(dialog).toHaveAttribute('data-state', 'open')
+  await dialog.getByRole('link', { name: 'Settings' }).focus()
+  await page.keyboard.press('Enter')
+  await expect(dialog).toHaveAttribute('data-state', 'closed')
+  await expect(page).toHaveURL(/\?view=settings$/)
+  await expect(toggle).toBeFocused()
+  await page.waitForTimeout(100)
+  expect(await page.evaluate(() => window.scrollY)).toBe(0)
+})
+
 test('R-11: a link opened in a new tab leaves the menu open', async ({
   page,
 }, info) => {
@@ -162,11 +184,8 @@ test('R-14: the skip link cannot be reached while the menu is open, and works af
 
 test('R-15: Tab keeps a focused control clear of a fixed bottom bar', async ({
   page,
-}, info) => {
-  test.skip(
-    info.project.name.includes('webkit'),
-    'WebKit ignores scroll-padding when Tab scrolls a field into view (scrollIntoView honours it); known limitation in docs/SPEC.md',
-  )
+}) => {
+  // WebKit ignores scroll-padding when Tab scrolls; the core's keepFocusClear corrects it (SUB-6).
   await load(page)
   const field = page.locator('#r15-button')
   await page.locator('#r15-before').focus()

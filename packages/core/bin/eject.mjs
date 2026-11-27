@@ -24,6 +24,7 @@ export const COMPONENTS = {
     entry: './mobile-nav',
     core: [
       'src/mobile-nav.ts',
+      'src/focus-clearance.ts',
       'src/dialog.ts',
       'src/scroll-lock.ts',
       'src/styles/dialog.css',

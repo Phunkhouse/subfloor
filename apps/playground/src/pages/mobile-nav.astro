@@ -171,6 +171,12 @@ const links = [
     overrides them, so set the tokens instead. This page has a fixed bar at the
     bottom and sets <code>--sf-fixed-bottom: 3.5rem</code>.
   </p>
+  <p>
+    Safari ignores <code>scroll-padding</code> when Tab scrolls, so the script
+    scrolls a focused control that still sits under a bar once more. Every
+    mobile nav turns this on; on a page without one, call
+    <code>keepFocusClear()</code> from <code>@subfloor/core</code>.
+  </p>
   <Code code={custom} lang="css" />
   <TokenTable only={['mobile-nav', 'fixed', 'current', 'touch-target']} />
 
@@ -212,6 +218,7 @@ const links = [
 
 <style>
   .fixed-bar {
+    box-sizing: border-box;
     position: fixed;
     inset: auto 0 0;
     display: grid;

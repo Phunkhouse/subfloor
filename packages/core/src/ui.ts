@@ -21,3 +21,4 @@ export {
   destroyMobileNavs,
   type MobileNavController,
 } from './mobile-nav'
+export { keepFocusClear } from './focus-clearance'

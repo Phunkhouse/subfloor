@@ -56,6 +56,7 @@ describe('eject', () => {
       'MobileNav.tsx',
       'dialog.css',
       'dialog.ts',
+      'focus-clearance.ts',
       'mobile-nav.css',
       'mobile-nav.ts',
       'scroll-lock.ts',
