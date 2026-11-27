@@ -2,21 +2,21 @@
 
 Rewritten, not appended, at every handoff and whenever the state changes materially. Under one page; history lives in Git.
 
-Updated: 2026-11-27 16:30 CET by Claude (agent)
+Updated: 2026-11-27 17:00 CET by Claude (agent)
 
 ## Goal
 
-Fix a React adapter bug found by a flaky CI run on PR #9: a dialog opened and closed before React ran its effects reopened itself (R-04).
+SUB-8: use `MobileNav` for the playground's own header on phones.
 
 ## State
 
-- Fixed on branch `fix/react-stale-open-effect`, PR open for the owner's review. `packages/react/src/Dialog.tsx` keeps React state and the core in step with `useLayoutEffect` instead of `useEffect`, so no effect for an old state is left waiting. New test: R-04, open and close at once, 15 rounds. Changeset: `@subfloor/react` patch.
-- It also caused the flaky R-11 keyboard test (the reopened menu closed again as `api` and restored the old offset).
-- SUB-6 and SUB-14 are Done. On `main`: Modal, Drawer/Sheet, Mobile nav, `keepFocusClear`, a Firefox project. Live at https://phunkhouse.github.io/subfloor/. Not on npm. Backlog in Vikunja (`SUB`); Done policy `verified`.
+- Built on branch `feat/sub-8-playground-header`, PR open for the owner's review. `Docs.astro`: below 768 px the inline links hide and a Menu button opens `MobileNav.astro` (`site-menu`) with the same links, the current page marked and `closeAt="(min-width: 768px)"`. The button uses the playground's button style. Without JavaScript, the inline links show on phones (`<noscript>`). Playground only; no package change, so no changeset.
+- New `e2e/site.spec.ts`: on a phone the menu lists the pages with the current one marked and its links navigate; growing past 768 px closes it; wide screens show the inline links.
+- On `main`: Modal, Drawer/Sheet, Mobile nav, `keepFocusClear`, the Firefox project, the React stale-effect fix. Live at https://phunkhouse.github.io/subfloor/. Not on npm. Backlog in Vikunja (`SUB`); SUB-6 and SUB-14 Done; Done policy `verified`.
 
 ## Next step
 
-Owner reviews the fix PR. Then the owner picks the next task from the Vikunja backlog.
+Owner reviews the SUB-8 PR. After the merge, the agent checks "Done when" and moves SUB-8 to Done; then the owner picks the next task.
 
 ## Blockers and open questions
 
@@ -26,8 +26,8 @@ Owner reviews the fix PR. Then the owner picks the next task from the Vikunja ba
 
 ## Last verified
 
-- Commands: `pnpm verify`; `pnpm test:e2e` on all five projects; the new R-04 test and the R-11 keyboard test repeated ten times each on every project.
-- Revision: `main` at `9a5503f` plus this branch's changes.
-- Working tree: the fix, before the commit.
-- Result: verify passed (10 unit tests). E2E: 261 passed, 24 skipped with reasons. Repeated: the new R-04 test and the R-11 keyboard test, 100 of 100 runs passed with the fix; without it the R-04 test failed 6 of 25.
-- Not run: a real phone; a Next.js app (O-07).
+- Commands: `pnpm verify`; `pnpm test:e2e` on all five projects; screenshots of the header and the open menu at 390 px (Chromium).
+- Revision: `main` at `320e171` plus this branch's changes.
+- Working tree: clean; the branch's commits are the SUB-8 changes.
+- Result: verify passed (10 unit tests). E2E: 281 passed, 24 skipped with the existing reasons (20 header tests, 5 of them without JavaScript).
+- Not run: a real phone. Without JavaScript, a `<noscript>` style shows the inline links on phones instead of the Menu button (after Claude's review), so no browser is left without page links.

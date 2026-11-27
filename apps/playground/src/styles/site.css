@@ -26,6 +26,24 @@ body {
   gap: 0.25rem 1rem;
 }
 
+/* Phones get the menu, wider screens the inline links. Keep 768px in step with closeAt in
+   Docs.astro. */
+.menu-toggle {
+  margin-left: auto;
+}
+
+@media (width < 768px) {
+  .site-header .site-links {
+    display: none;
+  }
+}
+
+@media (width >= 768px) {
+  .menu-toggle {
+    display: none;
+  }
+}
+
 .brand {
   font-weight: 700;
 }
@@ -60,7 +78,8 @@ main {
 
 /* Scoped to the demos: a global `button` rule would also restyle the kit's close button,
    because unlayered CSS beats @layer subfloor (that is the point of the layer). */
-:where(.demo, .card, .sf-dialog__footer) button {
+:where(.demo, .card, .sf-dialog__footer) button,
+.menu-toggle {
   min-height: 44px;
   padding: 0.5rem 1rem;
   border: 1px solid var(--sf-color-border);

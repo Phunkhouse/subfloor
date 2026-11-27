@@ -2,6 +2,7 @@
 import '@subfloor/core/tokens.css'
 import '@subfloor/core/components.css'
 import '../styles/site.css'
+import MobileNav from '@subfloor/astro/MobileNav.astro'
 import { url } from '../lib/url'
 
 interface Props {
@@ -18,6 +19,11 @@ const pages = [
   { href: '/react/', label: 'React adapter' },
 ]
 const current = Astro.url.pathname
+const links = pages.map((page) => ({
+  href: url(page.href),
+  label: page.label,
+  current: current === url(page.href),
+}))
 ---
 
 <!doctype html>
@@ -30,6 +36,19 @@ const current = Astro.url.pathname
     />
     <title>{title} · Subfloor</title>
     {description && <meta name="description" content={description} />}
+    <!-- Without JavaScript the menu needs Invoker Commands, which older Safari lacks: show the
+         inline links on phones too, and no Menu button. -->
+    <noscript>
+      <style>
+        /* Before site.css in the page, so one more selector part to win. */
+        html .site-header .site-links {
+          display: flex;
+        }
+        html .site-header .menu-toggle {
+          display: none;
+        }
+      </style>
+    </noscript>
   </head>
   <body>
     <a class="skip-link" href="#main">
@@ -39,17 +58,30 @@ const current = Astro.url.pathname
       <a class="brand" href={url('/')}>
         Subfloor
       </a>
-      <nav aria-label="Pages">
-        {pages.map((page) => (
-          <a
-            href={url(page.href)}
-            aria-current={current === url(page.href) ? 'page' : undefined}
-          >
-            {page.label}
+      <nav class="site-links" aria-label="Pages">
+        {links.map((link) => (
+          <a href={link.href} aria-current={link.current ? 'page' : undefined}>
+            {link.label}
           </a>
         ))}
       </nav>
+      <!-- Phones: the same links in the kit's own mobile nav (keep 768px in step with site.css). -->
+      <button
+        class="menu-toggle"
+        type="button"
+        command="show-modal"
+        commandfor="site-menu"
+        aria-haspopup="dialog"
+      >
+        Menu
+      </button>
     </header>
+    <MobileNav
+      id="site-menu"
+      title="Pages"
+      links={links}
+      closeAt="(min-width: 768px)"
+    />
     <main id="main">
       <h1>{title}</h1>
       {description && <p class="lead">{description}</p>}
