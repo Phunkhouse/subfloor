@@ -6,7 +6,7 @@ import {
   type DialogController,
 } from '@subfloor/core'
 import {
-  useEffect,
+  useLayoutEffect,
   useId,
   useRef,
   useState,
@@ -65,11 +65,14 @@ export function Dialog({
   // The state this component last asked the core for: its echo is not the user's change.
   const wanted = useRef(false)
   const latestOnOpenChange = useRef(onOpenChange)
-  useEffect(() => {
+  // Layout effects, not effects: they run in the same commit as the render. A passive effect runs
+  // later, so a dialog the user opened and closed in between got an effect for the old state,
+  // which reopened it (R-04). React 19 runs them on the client only, without a server warning.
+  useLayoutEffect(() => {
     latestOnOpenChange.current = onOpenChange
   })
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const element = ref.current
     if (!element) return
     const created = createDialog(element)
@@ -91,7 +94,7 @@ export function Dialog({
     }
   }, [])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const current = controller.current
     if (!current || wanted.current === isOpen) return
     wanted.current = isOpen

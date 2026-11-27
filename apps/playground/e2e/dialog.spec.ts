@@ -308,6 +308,43 @@ test.describe('Behaviour details', () => {
     await expectClosed(sheet)
   })
 
+  test('R-04: a React dialog opened and closed at once does not reopen itself', async ({
+    page,
+  }) => {
+    // The adapter keeps React state and the core in step. Opened by a commandfor button and closed
+    // before React ran its effects, an effect for the old state reopened it (then React closed it
+    // again as "api"). Repeated, because it depends on timing.
+    await load(page, '/react/')
+    const sheet = page.locator('#react-sheet')
+    await sheet.evaluate((el) => {
+      const w = window as unknown as { changes: string[] }
+      w.changes = []
+      el.addEventListener('sf:open-change', (event) => {
+        const { open, reason } = (event as CustomEvent).detail
+        w.changes.push(reason ? `${open} ${reason}` : String(open))
+      })
+    })
+    const button = page.locator('#react-open-sheet')
+    for (let i = 0; i < 15; i++) {
+      await button.focus()
+      await page.keyboard.press('Enter')
+      await page.keyboard.press('Escape')
+      await expect(sheet).toHaveAttribute('data-state', 'closed')
+    }
+    await page.waitForTimeout(100)
+    const changes = await page.evaluate(
+      () => (window as unknown as { changes: string[] }).changes,
+    )
+    // One open and one close per round, nothing more: a reopen adds a pair. The close reason is
+    // not checked: Chromium may close a dialog itself on a quick Escape ("api", see dialog.ts).
+    expect(changes).toHaveLength(30)
+    expect(changes.filter((_, i) => i % 2 === 0)).toEqual(
+      Array(15).fill('true'),
+    )
+    expect(changes.every((c, i) => (i % 2 === 0) === (c === 'true'))).toBe(true)
+    await expect(sheet).toHaveAttribute('data-state', 'closed')
+  })
+
   test('R-05: a long dialog scrolls inside, and its end does not scroll the page', async ({
     page,
   }, info) => {
