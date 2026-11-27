@@ -162,11 +162,8 @@ test('R-14: the skip link cannot be reached while the menu is open, and works af
 
 test('R-15: Tab keeps a focused control clear of a fixed bottom bar', async ({
   page,
-}, info) => {
-  test.skip(
-    info.project.name.includes('webkit'),
-    'WebKit ignores scroll-padding when Tab scrolls a field into view (scrollIntoView honours it); known limitation in docs/SPEC.md',
-  )
+}) => {
+  // WebKit ignores scroll-padding when Tab scrolls; the core's keepFocusClear corrects it (SUB-6).
   await load(page)
   const field = page.locator('#r15-button')
   await page.locator('#r15-before').focus()

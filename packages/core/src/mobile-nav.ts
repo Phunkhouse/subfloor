@@ -1,4 +1,5 @@
 import { closeDialog, createDialog, type DialogController } from './dialog'
+import { keepFocusClear } from './focus-clearance'
 
 /**
  * The phone menu: a `dialog[data-sf-mobile-nav]` that is the core dialog (focus containment, the
@@ -10,7 +11,9 @@ import { closeDialog, createDialog, type DialogController } from './dialog'
  * - a link to a place on this page closes it first and then goes there, so the scroll lock's
  *   restore does not undo the jump (R-12);
  * - `data-sf-close-at="<media query>"` closes it once the query matches, for example when the
- *   desktop layout applies (R-13).
+ *   desktop layout applies (R-13);
+ * - focused controls stay clear of fixed bars in WebKit too, which ignores `scroll-padding` when
+ *   Tab scrolls (R-15, `keepFocusClear`).
  *
  * Without JavaScript the dialog still opens and closes; links to other pages work, a link to this
  * page leaves the menu open, and it does not close when the window grows (R-10).
@@ -107,10 +110,13 @@ export function createMobileNav(
     )
   }
 
+  const stopFocusClear = keepFocusClear()
+
   const nav: MobileNavController = {
     dialog: controller,
     destroy() {
       abort.abort()
+      stopFocusClear()
       controller.destroy()
       navs.delete(dialog)
       live.delete(nav)
