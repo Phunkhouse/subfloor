@@ -42,6 +42,14 @@ describe('lockScroll', () => {
     expect(isScrollLocked()).toBe(false)
   })
 
+  it('releases without scrolling back when asked (a router changed the page, R-11)', () => {
+    const release = lockScroll()
+    release({ restore: false })
+    expect(body.style.position).toBe('')
+    expect(html.dataset.sfScrollLock).toBeUndefined()
+    expect(window.scrollTo).not.toHaveBeenCalled()
+  })
+
   it('keeps the scrollbar track only when the page had a classic scrollbar (R-02)', () => {
     let release = lockScroll()
     expect(html.style.overflowY).toBe('scroll')

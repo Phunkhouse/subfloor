@@ -13,6 +13,7 @@
     --sf-color-backdrop: rgb(9 9 11 / 50%);
     --sf-color-focus: #2563eb;
     --sf-color-hover: rgb(9 9 11 / 6%);
+    --sf-color-current: rgb(37 99 235 / 10%);
 
     /* Shape and depth */
     --sf-radius-overlay: 12px;
@@ -38,6 +39,12 @@
     --sf-dialog-width: 32rem;
     --sf-drawer-width: 24rem;
     --sf-sheet-max-height: 90dvh;
+    --sf-mobile-nav-width: 20rem;
+
+    /* Fixed bars: set these to the heights of your fixed header and bottom bar, so Tab and
+       in-page links keep focused controls and targets clear of them (R-15). */
+    --sf-fixed-top: 0px;
+    --sf-fixed-bottom: 0px;
 
     /* Motion: set the durations to 0s to turn it off. Reduced motion turns it off already. */
     --sf-duration-enter: 200ms;
@@ -55,6 +62,7 @@
       --sf-color-backdrop: rgb(0 0 0 / 65%);
       --sf-color-focus: #60a5fa;
       --sf-color-hover: rgb(255 255 255 / 8%);
+      --sf-color-current: rgb(96 165 250 / 16%);
     }
   }
 }

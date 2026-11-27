@@ -26,6 +26,12 @@ const placements = [
     dialog: '#drawer-end',
   },
   { name: 'sheet', path: '/drawer/', trigger: '#open-sheet', dialog: '#sheet' },
+  {
+    name: 'mobile nav',
+    path: '/mobile-nav/',
+    trigger: '#open-nav',
+    dialog: '#site-nav',
+  },
 ]
 
 for (const c of placements) {
@@ -56,7 +62,7 @@ for (const c of placements) {
       expect(Math.abs(box.x + box.width / 2 - viewport.width / 2)).toBeLessThan(
         10,
       )
-    } else if (c.name === 'drawer') {
+    } else if (c.name === 'drawer' || c.name === 'mobile nav') {
       expect(Math.round(box.x + box.width)).toBeGreaterThanOrEqual(
         viewport.width - 20,
       )

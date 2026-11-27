@@ -4,7 +4,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 
 const src = new URL('../src/styles/', import.meta.url)
 const dist = new URL('../dist/', import.meta.url)
-const components = ['dialog.css']
+const components = ['dialog.css', 'mobile-nav.css']
 
 await mkdir(dist, { recursive: true })
 const read = (name) => readFile(new URL(name, src), 'utf8')

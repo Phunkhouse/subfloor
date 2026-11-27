@@ -11,6 +11,9 @@
  * elements, including the pinned body, ignore the root's gutter.
  *
  * Locks nest: the page is released when the last one goes, and releasing twice does nothing.
+ *
+ * `release({ restore: false })` leaves the page at the top instead of the old offset: a client-side
+ * router has moved to another page while the body was pinned (mobile nav, R-11).
  */
 
 let locks = 0
@@ -32,8 +35,13 @@ function hasClassicScrollbar(): boolean {
   return window.innerWidth - document.documentElement.clientWidth > 0
 }
 
+export interface ReleaseOptions {
+  /** Scroll back to where the page was when it was locked. Default `true`. */
+  restore?: boolean
+}
+
 /** Locks page scrolling and returns the function that releases this lock. */
-export function lockScroll(): () => void {
+export function lockScroll(): (options?: ReleaseOptions) => void {
   if (locks++ === 0) {
     const html = document.documentElement
     const body = document.body
@@ -53,7 +61,7 @@ export function lockScroll(): () => void {
   }
 
   let released = false
-  return () => {
+  return ({ restore = true } = {}) => {
     if (released) return
     released = true
     if (--locks > 0 || !saved) return
@@ -62,7 +70,7 @@ export function lockScroll(): () => void {
     for (const p of BODY_PROPS) body.style[p] = saved.body[p] ?? ''
     // Restore the offset at once, even when the page asks for smooth scrolling.
     html.style.scrollBehavior = 'auto'
-    window.scrollTo(saved.x, saved.y)
+    if (restore) window.scrollTo(saved.x, saved.y)
     for (const p of HTML_PROPS) html.style[p] = saved.html[p] ?? ''
     delete html.dataset.sfScrollLock
     saved = null

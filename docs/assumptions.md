@@ -21,6 +21,7 @@ Approving a plan does not confirm an assumption: it stays open until the owner c
 | O-03 | Browser support floor Safari/iOS 17.4+, last two Chromium and Firefox. | `@starting-style`, `:has()`, `dvh`, `:modal` usage | Owner, against the consuming projects' audiences |
 | O-04 | The `@subfloor` npm scope is free. | Package names | Owner, on npmjs.com before the first publish |
 | O-06 | Firefox behaves like Chromium for everything tested. | R-01 to R-10 | Add a Firefox Playwright project, or a manual check |
+| O-07 | `MobileNav` with `renderLink={(p) => <Link {...p} />}` behaves in the Next.js App Router as with the `pushState` stand-in: one `navigate` close, the new page at the top, focus on the toggle. | R-11, R-14 | Adopting it in a Next.js project (Kultomat or Systerna) and checking those three |
 
 ## Disproved
 

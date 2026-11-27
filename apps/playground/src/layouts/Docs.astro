@@ -14,6 +14,7 @@ const pages = [
   { href: '/', label: 'Overview' },
   { href: '/modal/', label: 'Modal' },
   { href: '/drawer/', label: 'Drawer and Sheet' },
+  { href: '/mobile-nav/', label: 'Mobile nav' },
   { href: '/react/', label: 'React adapter' },
 ]
 const current = Astro.url.pathname
@@ -31,6 +32,9 @@ const current = Astro.url.pathname
     {description && <meta name="description" content={description} />}
   </head>
   <body>
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
     <header class="site-header">
       <a class="brand" href={url('/')}>
         Subfloor

@@ -4,6 +4,7 @@
  * the real one on this page. Later phases are shown as planned.
  */
 import Drawer from '@subfloor/astro/Drawer.astro'
+import MobileNav from '@subfloor/astro/MobileNav.astro'
 import Modal from '@subfloor/astro/Modal.astro'
 import { url } from '../lib/url'
 
@@ -26,14 +27,14 @@ const built = [
     text: 'From the bottom, for choices on a phone.',
     page: '/drawer/',
   },
+  {
+    id: 'mobile-nav',
+    name: 'Mobile nav',
+    text: 'The phone menu; a followed link closes it.',
+    page: '/mobile-nav/',
+  },
 ]
-const planned = [
-  'Mobile nav',
-  'Popover / Dropdown',
-  'Toast',
-  'Tabs',
-  'Form fields',
-]
+const planned = ['Popover / Dropdown', 'Toast', 'Tabs', 'Form fields']
 ---
 
 <section class="gallery" aria-labelledby="gallery-title">
@@ -89,6 +90,15 @@ const planned = [
     The same dialog along the end edge, full height in <code>dvh</code>.
   </p>
 </Drawer>
+<MobileNav
+  id="gallery-mobile-nav"
+  links={[
+    { href: url('/'), label: 'Overview', current: true },
+    { href: url('/modal/'), label: 'Modal' },
+    { href: url('/drawer/'), label: 'Drawer and Sheet' },
+    { href: url('/mobile-nav/'), label: 'Mobile nav' },
+  ]}
+/>
 <Drawer id="gallery-sheet" title="Sheet" placement="bottom">
   <p>The same dialog from the bottom. Long content scrolls inside it.</p>
 </Drawer>
@@ -196,6 +206,11 @@ const planned = [
 
   [data-kind='drawer'] .panel {
     inset: 0 0 0 55%;
+  }
+
+  [data-kind='mobile-nav'] .panel {
+    inset: 0 0 0 45%;
+    gap: 7px;
   }
 
   [data-kind='sheet'] .panel {

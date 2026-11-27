@@ -1,0 +1,76 @@
+---
+/**
+ * The phone menu: the @subfloor/core dialog with a list of links; the behaviour is the core's
+ * `createMobileNav`, loaded by the script below. Open it with a button anywhere on the page:
+ *   <button command="show-modal" commandfor="site-nav" aria-haspopup="dialog">Menu</button>
+ */
+import type { ComponentProps } from 'astro/types'
+import Dialog from './Dialog.astro'
+
+export interface MobileNavLink {
+  href: string
+  label: string
+  /** Marks the current page (`aria-current="page"`). */
+  current?: boolean
+}
+
+type Props = Omit<ComponentProps<typeof Dialog>, 'placement' | 'title'> & {
+  /** The heading; it also names the dialog and the `<nav>`. Default "Menu". */
+  title?: string
+  /** `end` (default) or `start`. */
+  placement?: 'start' | 'end'
+  links?: MobileNavLink[]
+  /** A media query; the menu closes once it matches, e.g. `(min-width: 768px)`. */
+  closeAt?: string
+}
+
+const {
+  id,
+  title = 'Menu',
+  placement = 'end',
+  links = [],
+  closeAt,
+  closeLabel = 'Close menu',
+  class: className,
+  ...rest
+} = Astro.props
+---
+
+<Dialog
+  {...rest}
+  id={id}
+  title={title}
+  placement={placement}
+  closeLabel={closeLabel}
+  class:list={['sf-mobile-nav', className]}
+  data-sf-mobile-nav=""
+  data-sf-close-at={closeAt}
+>
+  <nav class="sf-mobile-nav__nav" aria-labelledby={`${id}-title`}>
+    {links.length > 0 && (
+      <ul class="sf-mobile-nav__list">
+        {links.map((link) => (
+          <li>
+            <a
+              class="sf-mobile-nav__link"
+              href={link.href}
+              aria-current={link.current ? 'page' : undefined}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+    <slot />
+  </nav>
+  <slot name="footer" slot="footer" />
+</Dialog>
+
+<script>
+  import { destroyMobileNavs, initMobileNavs } from '@subfloor/core'
+
+  initMobileNavs()
+  document.addEventListener('astro:before-swap', () => destroyMobileNavs())
+  document.addEventListener('astro:page-load', () => initMobileNavs())
+</script>

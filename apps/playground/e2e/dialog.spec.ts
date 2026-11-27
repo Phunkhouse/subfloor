@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
 
-// Requirements R-01 to R-09 in docs/SPEC.md, for every placement and both adapters.
+// Requirements R-01 to R-09 in docs/SPEC.md, for every placement, both adapters and the mobile nav.
 
 interface Case {
   name: string
@@ -27,6 +27,12 @@ const cases: Case[] = [
     path: '/drawer/',
     trigger: '#open-sheet',
     dialog: '#sheet',
+  },
+  {
+    name: 'Astro mobile nav',
+    path: '/mobile-nav/',
+    trigger: '#open-nav',
+    dialog: '#site-nav',
   },
   {
     name: 'React modal',
@@ -222,7 +228,7 @@ for (const c of cases) {
       await expectClosed(dialog)
 
       dialog = await open(page, c)
-      await dialog.getByRole('button', { name: 'Close', exact: true }).click()
+      await dialog.locator('.sf-dialog__close').click()
       await expectClosed(dialog)
 
       dialog = await open(page, c)
@@ -268,7 +274,7 @@ test.describe('Behaviour details', () => {
   }) => {
     await load(page, '/react/')
     const log = page.locator('#react-log')
-    const c = cases[3]!
+    const c = cases.find((x) => x.name === 'React modal')!
     let dialog = await open(page, c)
     await expect(log).toHaveText('none')
     await page.keyboard.press('Escape')
