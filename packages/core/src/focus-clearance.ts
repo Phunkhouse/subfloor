@@ -7,7 +7,8 @@
  * done its own focus scroll, a control still inside the padding is scrolled once more. Where the
  * browser already got it right, this finds nothing to do.
  *
- * It acts only on `:focus-visible` (keyboard) focus, never inside an open modal dialog (the page
+ * It acts only on `:focus-visible` (keyboard) focus on a control that is at least partly on screen
+ * (one focused with `preventScroll` stays where it is), never inside an open modal dialog (the page
  * behind is locked and the dialog scrolls itself), and never when the root has no padding.
  *
  * Calls nest: the listener stays while any caller holds it; `createMobileNav` holds one.
@@ -37,6 +38,8 @@ function onFocusIn(event: FocusEvent) {
     const bottom = padding(style.scrollPaddingBottom)
     if (top === 0 && bottom === 0) return
     const box = target.getBoundingClientRect()
+    // Off screen: focused without scrolling on purpose (`preventScroll`), so leave it there.
+    if (box.bottom <= 0 || box.top >= window.innerHeight) return
     if (box.top < top || box.bottom > window.innerHeight - bottom)
       target.scrollIntoView({ block: 'nearest', inline: 'nearest' })
   })

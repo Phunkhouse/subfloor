@@ -181,6 +181,11 @@ export function createDialog(dialog: HTMLDialogElement): DialogController {
     setState('closing')
     emit({ open: false, reason })
     await transitionsDone(dialog)
+    // A close with options (a followed link) decides about the scroll at `finish`. Without a
+    // transition (reduced motion, closed while opening) that would come before the rest of the
+    // click's handlers, a router's among them: wait one task so the URL is current (R-11).
+    if (options !== DEFAULT_CLOSE)
+      await new Promise((resolve) => setTimeout(resolve, 0))
     // Read through the getter: the state may have changed while waiting.
     if (run === closeRun && controller.state === 'closing') finish()
   }
