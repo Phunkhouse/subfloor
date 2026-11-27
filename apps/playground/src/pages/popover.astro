@@ -146,8 +146,10 @@ const custom = `.compact-menu {
     </li>
     <li>
       It opens beside its button and flips to the other side at a screen edge
-      (CSS anchor positioning, no script). Browsers without anchor positioning
-      (Safari before 26) show it as a sheet along the bottom.
+      (CSS anchor positioning, no script). It keeps its natural width, so at a
+      side edge it lines up with the other end of the button; too tall for
+      either side, it gets shorter and scrolls inside. Browsers without anchor
+      positioning (Safari before 26) show it as a sheet along the bottom.
     </li>
     <li>
       An outside press or Escape closes it; the button closes it again. Escape

@@ -85,20 +85,59 @@ test('R-17: it opens below its button, and above it near the bottom of the scree
   expect(m.y + m.height).toBeLessThanOrEqual(t.y + 1)
 })
 
-test.describe('narrow screen', () => {
-  test.use({ viewport: { width: 390, height: 800 } })
+for (const width of [390, 1024]) {
+  test.describe(`${width}px wide`, () => {
+    test.use({ viewport: { width, height: 800 } })
 
-  test('R-17: at the end edge it flips to stay on screen', async ({ page }) => {
+    test('R-17: at the end edge it lines up with the end of its button instead of squeezing', async ({
+      page,
+    }) => {
+      await load(page)
+      const trigger = page.locator('#edge-popover-trigger')
+      await trigger.scrollIntoViewIfNeeded()
+      await trigger.click()
+      const panel = page.locator('#edge-popover')
+      await expect(panel).toHaveAttribute('data-state', 'open')
+      const t = await box(trigger)
+      const b = await box(panel)
+      expect(b.x).toBeGreaterThanOrEqual(0)
+      expect(Math.abs(b.x + b.width - (t.x + t.width))).toBeLessThan(1)
+      // Its natural width: the text does not wrap to fit the room left of the edge.
+      const lines = await panel
+        .locator('.popover-note')
+        .evaluate(
+          (el) =>
+            el.getClientRects().length === 1 &&
+            el.getBoundingClientRect().height <
+              2 * parseFloat(getComputedStyle(el).lineHeight || '20'),
+        )
+      expect(lines).toBe(true)
+    })
+  })
+}
+
+test.describe('short screen', () => {
+  test.use({ viewport: { width: 1024, height: 320 } })
+
+  test('R-17: too tall for either side, it stays on screen and scrolls inside', async ({
+    page,
+  }) => {
     await load(page)
-    const trigger = page.locator('#edge-popover-trigger')
-    await trigger.scrollIntoViewIfNeeded()
+    const trigger = page.locator('#actions-menu-trigger')
+    // The button in the middle: less room above and below than the menu needs.
+    await trigger.evaluate((el) => {
+      const r = el.getBoundingClientRect()
+      window.scrollBy(0, r.top + r.height / 2 - window.innerHeight / 2)
+    })
     await trigger.click()
-    const panel = page.locator('#edge-popover')
-    await expect(panel).toHaveAttribute('data-state', 'open')
-    const b = await box(panel)
-    const width = page.viewportSize()!.width
-    expect(b.x).toBeGreaterThanOrEqual(0)
-    expect(b.x + b.width).toBeLessThanOrEqual(width + 1)
+    const menu = page.locator('#actions-menu')
+    await expect(menu).toHaveAttribute('data-state', 'open')
+    const m = await box(menu)
+    expect(m.y).toBeGreaterThanOrEqual(0)
+    expect(m.y + m.height).toBeLessThanOrEqual(320 + 1)
+    expect(
+      await menu.evaluate((el) => el.scrollHeight > el.clientHeight + 1),
+    ).toBe(true)
   })
 })
 
