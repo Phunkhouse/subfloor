@@ -4,6 +4,7 @@ import Drawer from '@subfloor/astro/Drawer.astro'
 import Docs from '../layouts/Docs.astro'
 import Filler from '../components/Filler.astro'
 import TokenTable from '../components/TokenTable.astro'
+import { url } from '../lib/url'
 
 const usage = `---
 import Drawer from '@subfloor/astro/Drawer.astro'
@@ -64,13 +65,13 @@ const items = Array.from({ length: 30 }, (_, i) => `Option ${i + 1}`)
     <nav aria-label="Example">
       <ul>
         <li>
-          <a href="/">Overview</a>
+          <a href={url('/')}>Overview</a>
         </li>
         <li>
-          <a href="/modal/">Modal</a>
+          <a href={url('/modal/')}>Modal</a>
         </li>
         <li>
-          <a href="/react/">React adapter</a>
+          <a href={url('/react/')}>React adapter</a>
         </li>
       </ul>
     </nav>
@@ -96,8 +97,8 @@ const items = Array.from({ length: 30 }, (_, i) => `Option ${i + 1}`)
   <h2>Behaviour</h2>
   <ul>
     <li>
-      Everything the <a href="/modal/">Modal</a> does: scroll lock, focus,
-      Escape, backdrop, inert page.
+      Everything the <a href={url('/modal/')}>Modal</a> does: scroll lock,
+      focus, Escape, backdrop, inert page.
     </li>
     <li>
       A drawer is the full dynamic viewport height (<code>100dvh</code>), so the

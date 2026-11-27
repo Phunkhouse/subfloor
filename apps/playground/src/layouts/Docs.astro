@@ -2,6 +2,7 @@
 import '@subfloor/core/tokens.css'
 import '@subfloor/core/components.css'
 import '../styles/site.css'
+import { url } from '../lib/url'
 
 interface Props {
   title: string
@@ -31,14 +32,14 @@ const current = Astro.url.pathname
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="/">
+      <a class="brand" href={url('/')}>
         Subfloor
       </a>
       <nav aria-label="Pages">
         {pages.map((page) => (
           <a
-            href={page.href}
-            aria-current={current === page.href ? 'page' : undefined}
+            href={url(page.href)}
+            aria-current={current === url(page.href) ? 'page' : undefined}
           >
             {page.label}
           </a>

@@ -1,0 +1,205 @@
+---
+/**
+ * The visual overview: a card per component with a small drawing of it and a button that opens
+ * the real one on this page. Later phases are shown as planned.
+ */
+import Drawer from '@subfloor/astro/Drawer.astro'
+import Modal from '@subfloor/astro/Modal.astro'
+import { url } from '../lib/url'
+
+const built = [
+  {
+    id: 'modal',
+    name: 'Modal',
+    text: 'A centred dialog for a decision.',
+    page: '/modal/',
+  },
+  {
+    id: 'drawer',
+    name: 'Drawer',
+    text: 'The dialog along the start or end edge.',
+    page: '/drawer/',
+  },
+  {
+    id: 'sheet',
+    name: 'Sheet',
+    text: 'From the bottom, for choices on a phone.',
+    page: '/drawer/',
+  },
+]
+const planned = [
+  'Mobile nav',
+  'Popover / Dropdown',
+  'Toast',
+  'Tabs',
+  'Form fields',
+]
+---
+
+<section class="gallery" aria-labelledby="gallery-title">
+  <h2 id="gallery-title">Components</h2>
+  <ul class="cards">
+    {built.map((c) => (
+      <li class="card">
+        <div class="preview" data-kind={c.id} aria-hidden="true">
+          <span class="line" />
+          <span class="line short" />
+          <span class="line" />
+          <span class="panel">
+            <span class="bar" />
+            <span class="text" />
+            <span class="text short" />
+          </span>
+        </div>
+        <h3>
+          <a href={url(c.page)}>{c.name}</a>
+        </h3>
+        <p>{c.text}</p>
+        <button
+          type="button"
+          id={`gallery-open-${c.id}`}
+          command="show-modal"
+          commandfor={`gallery-${c.id}`}
+        >
+          Try it
+        </button>
+      </li>
+    ))}
+    {planned.map((name) => (
+      <li class="card planned">
+        <div class="preview" aria-hidden="true" />
+        <h3>{name}</h3>
+        <p>Planned</p>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<Modal id="gallery-modal" title="Modal">
+  <p>
+    The page behind does not scroll and cannot be focused. Escape, the backdrop
+    or the close button close it.
+  </p>
+  <form method="dialog" slot="footer">
+    <button value="ok">OK</button>
+  </form>
+</Modal>
+<Drawer id="gallery-drawer" title="Drawer">
+  <p>
+    The same dialog along the end edge, full height in <code>dvh</code>.
+  </p>
+</Drawer>
+<Drawer id="gallery-sheet" title="Sheet" placement="bottom">
+  <p>The same dialog from the bottom. Long content scrolls inside it.</p>
+</Drawer>
+
+<style>
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: 1rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem;
+    border: 1px solid var(--sf-color-border);
+    border-radius: var(--sf-radius-overlay);
+  }
+
+  .card h3 {
+    margin: 0.5rem 0 0;
+    font-size: 1rem;
+  }
+
+  .card p {
+    margin: 0 0 0.5rem;
+    color: var(--sf-color-muted);
+    font-size: 0.9375rem;
+  }
+
+  .card button {
+    margin-top: auto;
+    align-self: start;
+  }
+
+  .planned {
+    border-style: dashed;
+  }
+
+  /* A miniature page with the overlay drawn over it. */
+  .preview {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 6px;
+    height: 7.5rem;
+    padding: 12px;
+    border-radius: 8px;
+    background: var(--sf-color-hover);
+    overflow: hidden;
+  }
+
+  .line {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--sf-color-border);
+  }
+
+  .line.short {
+    width: 60%;
+  }
+
+  .preview[data-kind]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--sf-color-backdrop);
+  }
+
+  .panel {
+    position: absolute;
+    z-index: 1;
+    display: grid;
+    align-content: start;
+    gap: 5px;
+    padding: 8px;
+    background: var(--sf-color-surface);
+    box-shadow: var(--sf-shadow-overlay);
+  }
+
+  .bar {
+    height: 6px;
+    width: 50%;
+    border-radius: 3px;
+    background: var(--sf-color-text);
+  }
+
+  .text {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--sf-color-border);
+  }
+
+  .text.short {
+    width: 70%;
+  }
+
+  [data-kind='modal'] .panel {
+    inset: 22% 18%;
+    border-radius: 6px;
+  }
+
+  [data-kind='drawer'] .panel {
+    inset: 0 0 0 55%;
+  }
+
+  [data-kind='sheet'] .panel {
+    inset: 50% 0 0;
+    border-radius: 8px 8px 0 0;
+  }
+</style>

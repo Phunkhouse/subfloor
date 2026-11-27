@@ -2,6 +2,7 @@
 import { Code } from 'astro:components'
 import Docs from '../layouts/Docs.astro'
 import TokenTable from '../components/TokenTable.astro'
+import Gallery from '../components/Gallery.astro'
 
 const install = `pnpm add @subfloor/core @subfloor/astro   # Astro
 pnpm add @subfloor/core @subfloor/react   # React / Next.js`
@@ -21,6 +22,8 @@ const tailwind = `/* With Tailwind v4: the mapping first, so its layer order app
   title="Subfloor"
   description="The layer under the visible design: overlays that do not let the page scroll behind them, keep focus where it belongs and work before JavaScript arrives."
 >
+  <Gallery />
+
   <h2>Principles</h2>
   <ul>
     <li>
@@ -33,7 +36,7 @@ const tailwind = `/* With Tailwind v4: the mapping first, so its layer order app
     </li>
     <li>
       <strong>One core, thin adapters.</strong> Behaviour and CSS live in{' '}
-      <code>@subfloor/core</code>;<code>@subfloor/react</code> and{' '}
+      <code>@subfloor/core</code>; <code>@subfloor/react</code> and{' '}
       <code>@subfloor/astro</code> only render its markup.
     </li>
     <li>
@@ -48,21 +51,6 @@ const tailwind = `/* With Tailwind v4: the mapping first, so its layer order app
   <Code code={install} lang="sh" />
   <Code code={css} lang="css" />
   <Code code={tailwind} lang="css" />
-
-  <h2>Components</h2>
-  <ul>
-    <li>
-      <a href="/modal/">Modal</a>: a centred dialog.
-    </li>
-    <li>
-      <a href="/drawer/">Drawer and Sheet</a>: the same dialog along an edge or
-      from the bottom.
-    </li>
-    <li>
-      <a href="/react/">React adapter</a>: the same components in React (Next.js
-      App Router).
-    </li>
-  </ul>
 
   <h2>Tokens</h2>
   <p>

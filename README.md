@@ -13,7 +13,7 @@ Phase 1 has **Modal** and **Drawer/Sheet**. Mobile nav, popover/dropdown, toast,
 | `@subfloor/astro` | `Dialog.astro`, `Modal.astro`, `Drawer.astro`, shipped as source.                                                                                                                     |
 | `apps/playground` | Docs and live demos of every component, and the Playwright test target.                                                                                                               |
 
-Not published yet. Usage, markup, tokens and customisation for each component are in the playground.
+Not published yet. Usage, markup, tokens and customisation for each component are in the playground, which opens with a visual overview of the components. GitHub Pages publishes it from `main` once the repository exists (`.github/workflows/pages.yml`).
 
 ```css
 @import '@subfloor/core/tokens.css';

@@ -39,6 +39,7 @@
 - `pnpm test`: Vitest unit tests in `packages/*/test/` (scroll lock, eject). Only where there is logic; behaviour is proven in the browser.
 - `pnpm test:e2e`: builds, then Playwright in `apps/playground/e2e/` on Chromium, WebKit, Pixel 7 and iPhone 15, with and without JavaScript. First run: `pnpm --filter playground exec playwright install chromium webkit`.
 - `pnpm verify`: `format:check`, `lint`, `typecheck`, `test` and `build`; changes no tracked files. CI runs it (`ci.yml`) and `test:e2e` (`e2e.yml`).
+- GitHub Pages: `.github/workflows/pages.yml` builds the playground with `SITE` and `BASE_PATH=/<repository>/` on every push to `main` and publishes it. Links in the playground go through `url()` (`apps/playground/src/lib/url.ts`) so they work under that base path. Preview it locally: `BASE_PATH=/subfloor/ pnpm build`, then `BASE_PATH=/subfloor/ pnpm --filter playground exec astro preview`.
 - `pnpm changeset`: records a version bump and changelog entry for the published packages.
 - `pnpm exec subfloor eject <component> [--adapter react|astro] [--out dir]` (in a consuming project): copies one component's source there.
 
