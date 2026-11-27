@@ -66,7 +66,7 @@ These apply whatever the profile. Record the ones that apply under Governance.
 
 ## Git remote
 
-- Remote: none yet. The owner creates the GitHub repository (planned public); then set `origin` to `git@github-personal:Phunkhouse/subfloor.git` (assumption: name and account) and record it here. Do not add a remote or push without the owner's word.
+- Remote: `git@github-personal:Phunkhouse/subfloor.git` (public; owner, 2026-11-27).
 - Fetch and push only over SSH through the `github-personal` host alias, and use the same alias for any clone or added remote.
 - If SSH fails (for example `Permission denied (publickey)`), stop and report it. Do not switch to HTTPS, a token or another account to get around it.
 
@@ -78,7 +78,7 @@ These apply whatever the profile. Record the ones that apply under Governance.
 - **Decisions:** write a decision record when a choice constrains future work or is costly to reverse, such as the data model, platform, sign-in or an external service. Explain other meaningful choices in the PR description.
 - **Architecture:** keep business rules separate from route handlers and UI components, with validation and trust-boundary checks on the server, so the product can mature without a rewrite. Do not add layers, services or infrastructure for scale the product has not reached.
 - **Tests:** test by risk: business rules, trust boundaries and data integrity at the lowest useful level, real database integration tests for transactions, and a few end-to-end tests for the flows users depend on. Never add placeholder tests.
-- **Checks and CI:** `pnpm verify` runs `format:check`, `lint`, `typecheck`, `test` and `build` locally and changes no files; `pnpm test:e2e` runs the browser suite. CI strategy: Standard, from the starter pack's CI strategy recipe: cloud validation (`ci.yml` job `check`, `e2e.yml` job `playwright`) runs on every PR update, including drafts. Independent CI on the current revision must pass before merge. Until the repository exists there is no hosted CI, so nothing can be merged under this rule.
+- **Checks and CI:** `pnpm verify` runs `format:check`, `lint`, `typecheck`, `test` and `build` locally and changes no files; `pnpm test:e2e` runs the browser suite. CI strategy: Standard, from the starter pack's CI strategy recipe: cloud validation (`ci.yml` job `check`, `e2e.yml` job `playwright`) runs on every PR update, including drafts. Independent CI on the current revision must pass before merge.
 - **Pull requests:** one focused PR at a time, reviewed by the owner. Merge: the owner merges. `@claude review` on a PR asks for Claude's comments (recipe `claude-pr-review`); that is advice, not an approval. When a PR needs owner actions, such as a migration, a secret or a step on another machine, put them in an `> [!IMPORTANT]` block at the top of the description and repeat them in chat.
 - **Release:** a release is an npm publish, written down in `docs/runbook.md`. Never publish, create the npm organisation or push without the owner's explicit word for that release.
 - **Toward Production:** when paying users, personal data at scale, a second regular contributor or availability commitments arrive, tell the owner. A readiness review decides whether the project moves to Production.

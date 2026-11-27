@@ -87,7 +87,6 @@ No data is stored and nothing runs on a server. The packages run in the consumin
 ## Planning and open questions
 
 - Is the `@subfloor` npm scope free? `@subfloor/core` does not exist on npm (checked 2026-11-27); the organisation itself was not checked. Owner.
-- Repository name and visibility: assumed `Phunkhouse/subfloor`, public. Owner.
 - Declined at setup (2026-11-27): legal planning, scalability and cost planning.
 
 ## Design

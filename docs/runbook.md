@@ -38,7 +38,7 @@ A broken release: deprecate it (above), tell the consuming projects' threads, fi
 
 ## Owner actions pending
 
-1. Create the GitHub repository (planned `Phunkhouse/subfloor`, public), add `origin` over the `github-personal` alias, push `main`.
+1. ~~Create the GitHub repository and push `main`~~ done 2026-11-27 (`Phunkhouse/subfloor`, public).
 2. Turn on secret scanning and Dependabot alerts (free for public repositories).
 3. Install the Claude GitHub App and add `CLAUDE_CODE_OAUTH_TOKEN` (recipe `claude-pr-review`).
 4. Check that the `@subfloor` npm scope is free and create the organisation.
