@@ -19,9 +19,21 @@ Users: the owner and the agents working in the owner's projects. Public on npm u
 
 **Confirmed** (owner, 2026-11-27; plan approved the same day).
 
+### Phase 2: mobile nav (approved, not started)
+
+Scope approved by the owner on 2026-11-27, to start after Claude reviews are set up. **Decided** (owner, 2026-11-27). A modal phone menu that is the Phase 1 dialog plus a thin core layer: `createMobileNav` / `initMobileNavs` on `dialog[data-sf-mobile-nav]`, `data-placement="start|end"` (default `end`), links in `nav.sf-mobile-nav__list`, a new close reason `navigate`, tokens `--sf-fixed-top` / `--sf-fixed-bottom`, React `MobileNav` and Astro `MobileNav.astro`, a playground page and Playwright tests on all four projects. Requirements, moved into the list below when built:
+
+- R-11 Links close it: activating a link in the menu closes it with reason `navigate`, also with client-side routing (Next.js, Astro view transitions).
+- R-12 In-page links land: a `#section` link closes the menu, then the page scrolls to its target (the scroll lock's restore must not undo the jump).
+- R-13 Closes when the window grows: `data-sf-close-at="<media query>"` closes it (reason `api`) once the desktop layout applies. Already closed: nothing happens. An invalid query never matches, so it never closes the menu.
+- R-14 Focus and inertness: no hand-set `inert`. While the menu is open, nothing behind it can get focus, including the skip link (david-krapka WEB-002, Kultomat WEB-001). Where focus goes on close: Escape, the close button, the backdrop and R-13 return it to the toggle (R-07); an in-page link moves it to the link's target (R-12); a link to another page leaves it to the navigation. Once closed, the skip link works as usual.
+- R-15 Fixed bars do not cover focus: `--sf-fixed-top` and `--sf-fixed-bottom` set `scroll-padding` on the root, so Tab keeps focused controls clear of fixed bars (Systerna WEB-001). It is in `@layer subfloor`, so a project's own `scroll-padding` wins; the playground page says to set the tokens instead.
+
+Without JavaScript: the toggle opens it, Escape and the close button close it, links to other pages work; an in-page link leaves it open and it does not close on resize. Not included: a top sheet under the bar, submenus, drag-to-close.
+
 ### Out of scope now
 
-Mobile nav, Popover/Dropdown, Toast, Tabs and form fields are later phases ([BACKLOG.md](BACKLOG.md)); the API must leave room for them. Publishing to npm, creating the npm organisation and pushing to a remote happen only on the owner's word. **Confirmed** (owner, 2026-11-27).
+Popover/Dropdown, Toast, Tabs and form fields are later phases ([BACKLOG.md](BACKLOG.md)); the API must leave room for them. Publishing to npm, creating the npm organisation and pushing to a remote happen only on the owner's word. **Confirmed** (owner, 2026-11-27).
 
 ## Research: pitfalls found in the owner's projects
 
@@ -36,7 +48,7 @@ Read on 2026-11-27, read-only: Kultomat, Systerna, eucal, david-krapka, job-assi
 | A long sheet ran off the top of the screen; scrolling inside a sheet scrolled the page. | Systerna (#235, `max-height: 90dvh` added); Kultomat uses `overscroll-behavior: contain`. | R-05 |
 | Exit animations kept the element with a timeout (`CLOSE_MS`). | Kultomat `header-menu.tsx`. | R-06 |
 | Focus return and containment hand-rolled differently in every menu; Safari does not focus a clicked button, so "the previously focused element" is the body. | eucal `useFocusTrap`; david-krapka sets `inert` on `main` and `footer` by hand (and broke the skip link, WEB-002); Kultomat's phone menu closes on focus loss (WEB-001). | R-07, R-08 |
-| A fixed bottom bar hides the focused control. | Systerna WEB-001. | Later (mobile nav) |
+| A fixed bottom bar hides the focused control. | Systerna WEB-001. | R-15 (Phase 2) |
 | Dropdowns inside a panel are clipped by its `overflow`; a snackbar must sit above the bottom bar. | Systerna `clipEdges`, `Snackbar` with `popover="manual"`. | Later (top layer for Popover and Toast) |
 | jsdom has no `showModal`, so unit tests of dialogs test a fallback, not the browser. | Systerna `Dialog.tsx`. | D-03 |
 

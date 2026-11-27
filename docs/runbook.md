@@ -25,7 +25,7 @@ Only the owner releases, and only with an explicit go-ahead for that release.
 
 ## Secrets
 
-- `CLAUDE_CODE_OAUTH_TOKEN`: GitHub Actions secret for `claude.yml`, set by the owner after creating the repository.
+- `CLAUDE_CODE_OAUTH_TOKEN`: GitHub Actions secret for `claude.yml`, set by the owner (owner action 3) on 2026-11-27.
 - npm token: none in CI; the owner publishes from their machine.
 
 ## Backup and restore
@@ -40,6 +40,10 @@ A broken release: deprecate it (above), tell the consuming projects' threads, fi
 
 1. ~~Create the GitHub repository and push `main`~~ done 2026-11-27 (`Phunkhouse/subfloor`, public).
 2. ~~Secret scanning and Dependabot alerts~~ on (public repository; alerts enabled 2026-11-27).
-3. Install the Claude GitHub App and add `CLAUDE_CODE_OAUTH_TOKEN` (recipe `claude-pr-review`).
+3. ~~Claude reviews~~ done 2026-11-27: app installed, secret set, first `@claude review` posted on #5. Steps, for reference (recipe `claude-pr-review`; `claude.yml` pinned to `claude-code-action` v1.0.290):
+   1. Install the Claude GitHub App on `Phunkhouse/subfloor` only: https://github.com/apps/claude.
+   2. Create a token on your machine with `claude setup-token` (uses your Claude subscription).
+   3. Add it as the Actions secret: `gh secret set CLAUDE_CODE_OAUTH_TOKEN --repo Phunkhouse/subfloor` (paste it at the prompt, not on the command line).
+   4. Comment `@claude review` on an open PR; the `Claude PR review` run should post a review comment. Only commenters with write access trigger it. No comment after a minute: open the run under Actions; a missing or expired secret fails there, not on the PR.
 4. Check that the `@subfloor` npm scope is free and create the organisation.
 5. ~~Pages source: GitHub Actions~~ done 2026-11-27.
