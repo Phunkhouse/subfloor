@@ -16,6 +16,10 @@
 
 let holders = 0
 let frame = 0
+let timers: number[] = []
+
+/** When to check again if no frame comes, or the browser's own focus scroll comes late (ms). */
+const FALLBACK_DELAYS = [100, 300]
 
 /** A `scroll-padding` side in pixels; `auto` counts as none. */
 function padding(value: string): number {
@@ -24,25 +28,39 @@ function padding(value: string): number {
   return Number.isFinite(pixels) ? pixels : 0
 }
 
+/** Scrolls the focused control clear of the padding if it still sits in it; safe to repeat. */
+function clear(target: HTMLElement) {
+  if (document.activeElement !== target || !target.matches(':focus-visible'))
+    return
+  if (target.closest('dialog:modal')) return
+  const style = getComputedStyle(document.documentElement)
+  const top = padding(style.scrollPaddingTop)
+  const bottom = padding(style.scrollPaddingBottom)
+  if (top === 0 && bottom === 0) return
+  const box = target.getBoundingClientRect()
+  // Off screen: focused without scrolling on purpose (`preventScroll`), so leave it there.
+  if (box.bottom <= 0 || box.top >= window.innerHeight) return
+  if (box.top < top || box.bottom > window.innerHeight - bottom)
+    target.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+}
+
+function cancel() {
+  cancelAnimationFrame(frame)
+  for (const id of timers) clearTimeout(id)
+  timers = []
+}
+
 function onFocusIn(event: FocusEvent) {
   const target = event.target
   if (!(target instanceof HTMLElement)) return
-  cancelAnimationFrame(frame)
-  // The browser's own focus scroll has happened by the next frame.
-  frame = requestAnimationFrame(() => {
-    if (document.activeElement !== target || !target.matches(':focus-visible'))
-      return
-    if (target.closest('dialog:modal')) return
-    const style = getComputedStyle(document.documentElement)
-    const top = padding(style.scrollPaddingTop)
-    const bottom = padding(style.scrollPaddingBottom)
-    if (top === 0 && bottom === 0) return
-    const box = target.getBoundingClientRect()
-    // Off screen: focused without scrolling on purpose (`preventScroll`), so leave it there.
-    if (box.bottom <= 0 || box.top >= window.innerHeight) return
-    if (box.top < top || box.bottom > window.innerHeight - bottom)
-      target.scrollIntoView({ block: 'nearest', inline: 'nearest' })
-  })
+  cancel()
+  // The browser's own focus scroll has usually happened by the next frame. A page that is not
+  // painting (headless WebKit on Linux, a background tab) may not get one, and WebKit's own scroll
+  // can come late, so timers run the same check again; a run with nothing to do does nothing.
+  frame = requestAnimationFrame(() => clear(target))
+  timers = FALLBACK_DELAYS.map((ms) =>
+    window.setTimeout(() => clear(target), ms),
+  )
 }
 
 /** Starts keeping focused controls clear of fixed bars; returns the function that stops it. */
@@ -55,7 +73,7 @@ export function keepFocusClear(): () => void {
     stopped = true
     if (--holders === 0) {
       document.removeEventListener('focusin', onFocusIn)
-      cancelAnimationFrame(frame)
+      cancel()
     }
   }
 }

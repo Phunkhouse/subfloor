@@ -2,21 +2,20 @@
 
 Rewritten, not appended, at every handoff and whenever the state changes materially. Under one page; history lives in Git.
 
-Updated: 2026-11-27 17:00 CET by Claude (agent)
+Updated: 2026-11-27 17:55 CET by Claude (agent)
 
 ## Goal
 
-SUB-8: use `MobileNav` for the playground's own header on phones.
+Fix the flaky R-15 test in WebKit, seen in CI on PR #11.
 
 ## State
 
-- Built on branch `feat/sub-8-playground-header`, PR open for the owner's review. `Docs.astro`: below 768 px the inline links hide and a Menu button opens `MobileNav.astro` (`site-menu`) with the same links, the current page marked and `closeAt="(min-width: 768px)"`. The button uses the playground's button style. Without JavaScript, the inline links show on phones (`<noscript>`). Playground only; no package change, so no changeset.
-- New `e2e/site.spec.ts`: on a phone the menu lists the pages with the current one marked and its links navigate; growing past 768 px closes it; wide screens show the inline links.
-- On `main`: Modal, Drawer/Sheet, Mobile nav, `keepFocusClear`, the Firefox project, the React stale-effect fix. Live at https://phunkhouse.github.io/subfloor/. Not on npm. Backlog in Vikunja (`SUB`); SUB-6 and SUB-14 Done; Done policy `verified`.
+- Fixed on branch `fix/focus-clear-without-frames`, PR open for the owner's review. Cause, reproduced in CI's own image (`mcr.microsoft.com/playwright:v1.65.1-noble`, run locally in Docker, arm64): headless Linux WebKit sometimes gives no animation frame after a Tab, so `keepFocusClear` never ran its check, and WebKit's own focus scroll did not run either. The check now also runs from timers at 100 and 300 ms; a run with nothing to do does nothing. Changeset: `@subfloor/core` patch.
+- SUB-6, SUB-8 and SUB-14 are Done. On `main`: Modal, Drawer/Sheet, Mobile nav, `keepFocusClear`, the Firefox project, the React stale-effect fix, the playground header menu. Live at https://phunkhouse.github.io/subfloor/. Not on npm. Backlog in Vikunja (`SUB`); Done policy `verified`.
 
 ## Next step
 
-Owner reviews the SUB-8 PR. After the merge, the agent checks "Done when" and moves SUB-8 to Done; then the owner picks the next task.
+Owner reviews the fix PR. Then the owner picks the next task from the Vikunja backlog.
 
 ## Blockers and open questions
 
@@ -26,8 +25,8 @@ Owner reviews the SUB-8 PR. After the merge, the agent checks "Done when" and mo
 
 ## Last verified
 
-- Commands: `pnpm verify`; `pnpm test:e2e` on all five projects; screenshots of the header and the open menu at 390 px (Chromium).
-- Revision: `main` at `320e171` plus this branch's changes.
-- Working tree: clean; the branch's commits are the SUB-8 changes.
-- Result: verify passed (10 unit tests). E2E: 281 passed, 24 skipped with the existing reasons (20 header tests, 5 of them without JavaScript).
-- Not run: a real phone. Without JavaScript, a `<noscript>` style shows the inline links on phones instead of the Menu button (after Claude's review), so no browser is left without page links.
+- Commands: `pnpm verify`; `pnpm test:e2e` (macOS, five projects); in CI's image: R-15 on `webkit` and `mobile-webkit` repeated, and the full suite.
+- Revision: `main` at `bcfa4dc` plus this branch's changes.
+- Working tree: the fix, before the commit.
+- Result: verify passed (10 unit tests). E2E on macOS: 281 passed, 24 skipped. In CI's image: R-15 on WebKit failed 18 of 60 runs before the fix and passed 400 of 400 after; the full suite passed (281 passed, 24 skipped).
+- Not run: CI's x64 runner (the container ran on arm64); a real phone.
