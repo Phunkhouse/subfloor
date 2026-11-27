@@ -4,6 +4,11 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      # TypeScript stays on 6.0.x: TS 7 ships no compiler API, which
+      # typescript-eslint, tsup's dts build and @astrojs/check still need.
+      - dependency-name: typescript
+        versions: ['>=7']
     groups:
       dev-dependencies:
         dependency-type: development
