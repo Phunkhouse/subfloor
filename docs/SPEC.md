@@ -25,9 +25,9 @@ Scope approved by the owner on 2026-11-27, to start after Claude reviews are set
 
 - R-11 Links close it: activating a link in the menu closes it with reason `navigate`, also with client-side routing (Next.js, Astro view transitions).
 - R-12 In-page links land: a `#section` link closes the menu, then the page scrolls to its target (the scroll lock's restore must not undo the jump).
-- R-13 Closes when the window grows: `data-sf-close-at="<media query>"` closes it once the desktop layout applies.
-- R-14 Skip link and inertness: no hand-set `inert`; while open the skip link is unreachable like the rest of the page; after closing it moves focus to `main` (david-krapka WEB-002, Kultomat WEB-001).
-- R-15 Fixed bars do not cover focus: `--sf-fixed-top` and `--sf-fixed-bottom` set `scroll-padding` on the root, so Tab keeps focused controls clear of fixed bars (Systerna WEB-001).
+- R-13 Closes when the window grows: `data-sf-close-at="<media query>"` closes it (reason `api`) once the desktop layout applies. Already closed: nothing happens. An invalid query never matches, so it never closes the menu.
+- R-14 Focus and inertness: no hand-set `inert`. While the menu is open, nothing behind it can get focus, including the skip link (david-krapka WEB-002, Kultomat WEB-001). Where focus goes on close: Escape, the close button, the backdrop and R-13 return it to the toggle (R-07); an in-page link moves it to the link's target (R-12); a link to another page leaves it to the navigation. Once closed, the skip link works as usual.
+- R-15 Fixed bars do not cover focus: `--sf-fixed-top` and `--sf-fixed-bottom` set `scroll-padding` on the root, so Tab keeps focused controls clear of fixed bars (Systerna WEB-001). It is in `@layer subfloor`, so a project's own `scroll-padding` wins; the playground page says to set the tokens instead.
 
 Without JavaScript: the toggle opens it, Escape and the close button close it, links to other pages work; an in-page link leaves it open and it does not close on resize. Not included: a top sheet under the bar, submenus, drag-to-close.
 
