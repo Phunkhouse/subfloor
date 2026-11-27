@@ -54,6 +54,8 @@ import { Menu, Popover } from '@subfloor/react'
   renderLink={(props) => <Link {...props} />}
 />
 
+// Controlled: set open in onOpenChange. If open stays true after the user
+// closed it, it stays closed until open changes (as with Dialog).
 <Popover label="Filters" open={open} onOpenChange={(next) => setOpen(next)}>
   …
 </Popover>`

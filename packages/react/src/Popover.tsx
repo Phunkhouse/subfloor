@@ -30,7 +30,8 @@ export interface PopoverProps extends Omit<
   defaultOpen?: boolean
   /**
    * Called once when the user opens or closes it (the button, an outside press, Escape), never
-   * for a change made through `open`. Set `open` here.
+   * for a change made through `open`. Set `open` here: a parent that keeps `open` unchanged after
+   * the user closed it leaves it closed until `open` changes, as with `Dialog`.
    */
   onOpenChange?: (open: boolean, reason?: PopoverCloseReason) => void
   /** Where it opens; it flips at a screen edge. */

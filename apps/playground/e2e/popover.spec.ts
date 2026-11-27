@@ -239,6 +239,24 @@ test('R-19: Tab closes the menu and moves on', async ({ page }) => {
   expect(await changes(page)).toEqual(['true', 'false tab'])
 })
 
+test('R-18: a mouse click on the button closes an open menu, without reopening it', async ({
+  page,
+}) => {
+  // With focus on an item, Chromium and Firefox focus the button on mousedown: the move of focus
+  // to the menu's own button must not close it as "tab" before the click toggles (review of #13).
+  await load(page)
+  await recordChanges(page, '#actions-menu')
+  const trigger = page.locator('#actions-menu-trigger')
+  const menu = page.locator('#actions-menu')
+  await trigger.focus()
+  await page.keyboard.press('ArrowDown')
+  await expect.poll(() => focusedText(page)).toBe('Edit')
+  await trigger.click()
+  await expect(menu).toBeHidden()
+  await page.waitForTimeout(100)
+  expect(await changes(page)).toEqual(['true', 'false toggle'])
+})
+
 test('R-19: a link item navigates', async ({ page }) => {
   await load(page)
   await page.locator('#actions-menu-trigger').click()

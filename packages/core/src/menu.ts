@@ -176,11 +176,15 @@ export function createMenu(element: HTMLElement): MenuController {
   )
 
   // Tab (or any focus move) out of the open menu closes it, and the focus stays where it went.
+  // Not a move to the menu's own button: Chromium and Firefox focus it on mousedown, and the click
+  // that follows toggles the menu itself (closing it here first made the click reopen it).
   element.addEventListener(
     'focusout',
     (event) => {
       const next = event.relatedTarget
-      if (next instanceof Node && !element.contains(next)) popover.hide('tab')
+      if (!(next instanceof Node) || element.contains(next)) return
+      if (popover.invokers().some((button) => button.contains(next))) return
+      popover.hide('tab')
     },
     on,
   )

@@ -160,13 +160,16 @@ export function createPopover(element: HTMLElement): PopoverController {
     },
     hide(why = 'api') {
       if (!element.matches(':popover-open')) return
-      reason = why
+      // A cause already noted (Escape, an outside press) wins over a later call.
+      reason ??= why
       element.hidePopover()
     },
     invokers,
     destroy() {
       abort.abort()
       if (element.matches(':popover-open')) element.hidePopover()
+      // The toggle event is no longer handled: reset what it would have.
+      setExpanded(false)
       delete element.dataset.state
       controllers.delete(element)
       live.delete(controller)
