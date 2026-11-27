@@ -41,8 +41,8 @@ Prerequisites: Node 26 (`.nvmrc`), pnpm 12 (`packageManager`).
 pnpm install
 pnpm dev                 # playground on http://localhost:4321
 pnpm verify              # format, lint, typecheck, unit tests, build
-pnpm --filter playground exec playwright install chromium webkit   # once
-pnpm test:e2e            # Playwright: Chromium, WebKit, Pixel 7, iPhone 15, with and without JS
+pnpm --filter playground exec playwright install chromium webkit firefox   # once
+pnpm test:e2e            # Playwright: Chromium, WebKit, Firefox, Pixel 7, iPhone 15, with and without JS
 ```
 
 All commands are listed in [AGENTS.md](AGENTS.md#commands).
