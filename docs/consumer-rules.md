@@ -6,7 +6,7 @@ Paste this section into a project's `AGENTS.md` (or `CLAUDE.md`).
 
 ## UI foundation: Subfloor
 
-- Overlays and menus come from Subfloor (`@subfloor/core` with `@subfloor/react` or `@subfloor/astro`): Modal, Drawer, Sheet and Mobile nav today; popover/dropdown, toast and tabs as they arrive. Never hand-roll a modal, drawer, sheet, phone menu or dropdown, and never add a scroll lock, focus trap or `inert` handling of your own.
+- Overlays and menus come from Subfloor (`@subfloor/core` with `@subfloor/react` or `@subfloor/astro`): Modal, Drawer, Sheet, Mobile nav, Popover and Menu today; toast and tabs as they arrive. Never hand-roll a modal, drawer, sheet, phone menu or dropdown, and never add a scroll lock, focus trap or `inert` handling of your own.
 - Customise with `--sf-*` tokens, the `sf-*__*` part classes and `data-*` attributes, in your own CSS. Subfloor's CSS is in `@layer subfloor`, so your CSS wins without `!important`. Keep global element rules (`button { … }`) scoped, or they restyle the kit's parts too.
 - If Subfloor lacks something or has a bug, fix it in Subfloor (or ask for it there), not in this project. `subfloor eject` is the last resort and the copy stops getting fixes; record why in a decision.
 - Fixed header or bottom bar: set `--sf-fixed-top` / `--sf-fixed-bottom` to their heights instead of your own `scroll-padding`.

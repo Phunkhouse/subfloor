@@ -1,0 +1,84 @@
+/*
+ * Popover: a non-modal panel, `[popover][data-sf-popover]`, beside the button that opens it.
+ * Markup: see the playground's Popover and Menu page. Requirements: docs/SPEC.md (R-16 to R-21).
+ */
+@layer subfloor {
+  /* The top layer keeps it whole whatever clips the button (R-16). CSS anchor positioning puts it
+     next to the button and flips it to the other side at a screen edge (R-17). The button names
+     itself with `anchor-name` and the panel points at it with `position-anchor`; the adapters set
+     both. */
+  .sf-popover {
+    box-sizing: border-box;
+    inset: auto;
+    min-width: var(--sf-popover-min-width);
+    max-width: var(--sf-popover-max-width);
+    max-height: var(--sf-popover-max-height);
+    margin: var(--sf-popover-offset) 0;
+    padding: var(--sf-space-1);
+    overflow: auto;
+    overscroll-behavior: contain;
+    border: var(--sf-border-width) solid var(--sf-color-border);
+    border-radius: var(--sf-radius-popover);
+    background: var(--sf-color-surface);
+    box-shadow: var(--sf-shadow-popover);
+    color: var(--sf-color-text);
+    position-area: block-end span-inline-end;
+    position-try-fallbacks:
+      flip-block,
+      flip-inline,
+      flip-block flip-inline;
+    opacity: 0;
+    transform: translateY(-0.25rem);
+    transition:
+      opacity var(--sf-duration-exit) var(--sf-ease-exit),
+      transform var(--sf-duration-exit) var(--sf-ease-exit),
+      overlay var(--sf-duration-exit) allow-discrete,
+      display var(--sf-duration-exit) allow-discrete;
+  }
+
+  .sf-popover[data-placement='bottom-end'] {
+    position-area: block-end span-inline-start;
+  }
+
+  .sf-popover[data-placement='top-start'] {
+    position-area: block-start span-inline-end;
+  }
+
+  .sf-popover[data-placement='top-end'] {
+    position-area: block-start span-inline-start;
+  }
+
+  .sf-popover:popover-open {
+    opacity: 1;
+    transform: none;
+    transition-duration: var(--sf-duration-enter);
+    transition-timing-function: var(--sf-ease-enter);
+  }
+
+  @starting-style {
+    .sf-popover:popover-open {
+      opacity: 0;
+      transform: translateY(-0.25rem);
+    }
+  }
+
+  /* A browser without anchor positioning (Safari before 26) would centre the panel on the screen:
+     show it as a sheet along the bottom edge instead, whole and readable. */
+  @supports not (anchor-name: --sf) {
+    .sf-popover {
+      inset: auto 0 0;
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding-bottom: max(var(--sf-space-1), env(safe-area-inset-bottom, 0));
+      border-radius: var(--sf-radius-overlay) var(--sf-radius-overlay) 0 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sf-popover,
+    .sf-popover:popover-open {
+      transition: none;
+    }
+  }
+}

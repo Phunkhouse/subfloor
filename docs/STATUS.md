@@ -2,31 +2,32 @@
 
 Rewritten, not appended, at every handoff and whenever the state changes materially. Under one page; history lives in Git.
 
-Updated: 2026-11-27 17:55 CET by Claude (agent)
+Updated: 2026-11-27 19:00 CET by Claude (agent)
 
 ## Goal
 
-Fix the flaky R-15 test in WebKit, seen in CI on PR #11.
+SUB-9: Popover and Menu (Phase 3, R-16 to R-21), scope approved by the owner on 2026-11-27.
 
 ## State
 
-- Fixed on branch `fix/focus-clear-without-frames`, PR open for the owner's review. Cause, reproduced in CI's own image (`mcr.microsoft.com/playwright:v1.65.1-noble`, run locally in Docker, arm64): headless Linux WebKit sometimes gives no animation frame after a Tab, so `keepFocusClear` never ran its check, and WebKit's own focus scroll did not run either. The check now also runs from timers at 100 and 300 ms; a run with nothing to do does nothing. Changeset: `@subfloor/core` patch.
-- SUB-6, SUB-8 and SUB-14 are Done. On `main`: Modal, Drawer/Sheet, Mobile nav, `keepFocusClear`, the Firefox project, the React stale-effect fix, the playground header menu. Live at https://phunkhouse.github.io/subfloor/. Not on npm. Backlog in Vikunja (`SUB`); Done policy `verified`.
+- Built on branch `feat/sub-9-popover-menu`, PR open for the owner's review: core `createPopover` / `createMenu` (plus a shared `opener.ts` taken out of `dialog.ts`), CSS with anchor positioning and a bottom-sheet fallback, React `Popover` / `Menu`, Astro `Popover.astro` / `Menu.astro`, playground page `/popover/` and gallery card, decision [0004](decisions/0004-native-popover-and-anchor-positioning.md), eject entries, changeset (minor, all three packages).
+- `sf:open-change` keeps its global type (dialog reasons); popovers use `OpenChangeDetail<PopoverCloseReason>`, so existing typed listeners keep compiling.
+- On `main`: Modal, Drawer/Sheet, Mobile nav, `keepFocusClear`, the Firefox project, the React stale-effect fix, the playground header menu. Live at https://phunkhouse.github.io/subfloor/. Not on npm. Backlog in Vikunja (`SUB`); Done policy `verified`.
 
 ## Next step
 
-Owner reviews the fix PR. Then the owner picks the next task from the Vikunja backlog.
+Owner reviews the SUB-9 PR. After the merge, the agent checks "Done when" and moves SUB-9 to Done.
 
 ## Blockers and open questions
 
-- Owner: is the `@subfloor` npm scope free (O-04)? Confirm the browser support floor (O-03). (SUB-2)
+- Owner: is the `@subfloor` npm scope free (O-04)? Confirm the browser support floor (O-03): anchor positioning needs Safari 26; older Safari gets the bottom-sheet fallback. (SUB-2)
 - Manual iPhone check of the scroll lock not done yet (O-01, O-02; SUB-3).
 - O-07: `MobileNav` with `next/link` not yet tried in a Next.js app (SUB-5).
 
 ## Last verified
 
-- Commands: `pnpm verify`; `pnpm test:e2e` (macOS, five projects); in CI's image: R-15 on `webkit` and `mobile-webkit` repeated, and the full suite.
-- Revision: `main` at `bcfa4dc` plus this branch's changes.
-- Working tree: the fix, before the commit.
-- Result: verify passed (10 unit tests). E2E on macOS: 281 passed, 24 skipped. In CI's image: R-15 on WebKit failed 18 of 60 runs before the fix and passed 400 of 400 after; the full suite passed (281 passed, 24 skipped).
-- Not run: CI's x64 runner (the container ran on arm64); a real phone.
+- Commands: `pnpm verify`; `pnpm test:e2e` on all five projects; the new tests repeated twice; mutation checks (no flip fallbacks fails R-17, no focus return fails R-18 in WebKit, no disabled skip fails R-19); full suite in CI's image (Docker).
+- Revision: `main` at `634496c` plus this branch's changes.
+- Working tree: the SUB-9 changes, before the commit.
+- Result: verify passed (11 unit tests). E2E on macOS: 356 passed, 24 skipped. In CI's image: the full suite 356 passed, 24 skipped; `popover.spec.ts` five times, 325 of 325.
+- Not run: the bottom-sheet fallback (every engine under test has anchor positioning); a real phone.

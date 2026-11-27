@@ -40,6 +40,13 @@
     --sf-drawer-width: 24rem;
     --sf-sheet-max-height: 90dvh;
     --sf-mobile-nav-width: 20rem;
+    --sf-popover-min-width: 12rem;
+    --sf-popover-max-width: min(22rem, 100vw - 2 * var(--sf-overlay-gutter));
+    --sf-popover-max-height: min(22rem, 70dvh);
+    --sf-popover-offset: var(--sf-space-1);
+    --sf-radius-popover: var(--sf-radius-control);
+    --sf-shadow-popover: 0 8px 24px rgb(0 0 0 / 16%);
+    --sf-color-danger: #b91c1c;
 
     /* Fixed bars: set these to the heights of your fixed header and bottom bar, so Tab and
        in-page links keep focused controls and targets clear of them (R-15). */
@@ -63,6 +70,7 @@
       --sf-color-focus: #60a5fa;
       --sf-color-hover: rgb(255 255 255 / 8%);
       --sf-color-current: rgb(96 165 250 / 16%);
+      --sf-color-danger: #f87171;
     }
   }
 }

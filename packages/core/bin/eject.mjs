@@ -16,7 +16,12 @@ const coreDir = join(dirname(fileURLToPath(import.meta.url)), '..')
 export const COMPONENTS = {
   dialog: {
     entry: './dialog',
-    core: ['src/dialog.ts', 'src/scroll-lock.ts', 'src/styles/dialog.css'],
+    core: [
+      'src/dialog.ts',
+      'src/opener.ts',
+      'src/scroll-lock.ts',
+      'src/styles/dialog.css',
+    ],
     react: ['src/Dialog.tsx'],
     astro: ['src/Dialog.astro', 'src/Modal.astro', 'src/Drawer.astro'],
   },
@@ -26,6 +31,7 @@ export const COMPONENTS = {
       'src/mobile-nav.ts',
       'src/focus-clearance.ts',
       'src/dialog.ts',
+      'src/opener.ts',
       'src/scroll-lock.ts',
       'src/styles/dialog.css',
       'src/styles/mobile-nav.css',
@@ -33,12 +39,39 @@ export const COMPONENTS = {
     react: ['src/Dialog.tsx', 'src/MobileNav.tsx'],
     astro: ['src/Dialog.astro', 'src/MobileNav.astro'],
   },
+  popover: {
+    entry: './popover',
+    core: [
+      'src/popover.ts',
+      'src/dialog.ts',
+      'src/opener.ts',
+      'src/scroll-lock.ts',
+      'src/styles/popover.css',
+    ],
+    react: ['src/Popover.tsx'],
+    astro: ['src/Popover.astro'],
+  },
+  menu: {
+    entry: './menu',
+    core: [
+      'src/menu.ts',
+      'src/popover.ts',
+      'src/dialog.ts',
+      'src/opener.ts',
+      'src/scroll-lock.ts',
+      'src/styles/popover.css',
+      'src/styles/menu.css',
+    ],
+    react: ['src/Menu.tsx', 'src/Popover.tsx'],
+    astro: ['src/Menu.astro'],
+  },
 }
 const ALIASES = {
   modal: 'dialog',
   drawer: 'dialog',
   sheet: 'dialog',
   nav: 'mobile-nav',
+  dropdown: 'menu',
 }
 
 /** The entry of the first component that lists a file: Dialog.tsx belongs to the dialog. */

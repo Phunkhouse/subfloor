@@ -20,6 +20,7 @@ describe('eject', () => {
       [
         'src/subfloor/dialog/dialog.css',
         'src/subfloor/dialog/dialog.ts',
+        'src/subfloor/dialog/opener.ts',
         'src/subfloor/dialog/scroll-lock.ts',
       ].map((f) => join(...f.split('/'))),
     )
@@ -59,6 +60,7 @@ describe('eject', () => {
       'focus-clearance.ts',
       'mobile-nav.css',
       'mobile-nav.ts',
+      'opener.ts',
       'scroll-lock.ts',
     ])
     const nav = await readFile(join(dir, 'MobileNav.tsx'), 'utf8')
@@ -66,6 +68,22 @@ describe('eject', () => {
     const dialog = await readFile(join(dir, 'Dialog.tsx'), 'utf8')
     expect(dialog).toContain("from './dialog'")
     expect(nav + dialog).not.toMatch(/from '@subfloor\/core'/)
+  })
+
+  it('copies the menu with the popover under it, each adapter file importing its own module', async () => {
+    cwd = await mkdtemp(join(tmpdir(), 'subfloor-eject-'))
+    await eject({
+      component: 'menu',
+      adapter: 'react',
+      cwd,
+      adapterDir: reactDir,
+    })
+    const dir = join(cwd, 'src', 'subfloor', 'menu')
+    const menu = await readFile(join(dir, 'Menu.tsx'), 'utf8')
+    expect(menu).toContain("from './menu'")
+    const popover = await readFile(join(dir, 'Popover.tsx'), 'utf8')
+    expect(popover).toContain("from './popover'")
+    expect(menu + popover).not.toMatch(/from '@subfloor\/core'/)
   })
 
   it('refuses an unknown component or adapter', async () => {

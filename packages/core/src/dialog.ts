@@ -1,3 +1,4 @@
+import { currentOpener, trackPresses } from './opener'
 import { lockScroll } from './scroll-lock'
 
 /**
@@ -24,14 +25,17 @@ export type DialogCloseReason =
   'escape' | 'backdrop' | 'button' | 'api' | 'navigate'
 export type DialogState = 'open' | 'closing' | 'closed'
 
-export interface OpenChangeDetail {
+/** The detail of `sf:open-change`. `R` is the close reason of the component (dialog by default). */
+export interface OpenChangeDetail<R extends string = DialogCloseReason> {
   open: boolean
   /** Why it closed; only when `open` is false. */
-  reason?: DialogCloseReason
+  reason?: R
 }
 
 declare global {
   interface HTMLElementEventMap {
+    // Typed with the dialog's reasons; a popover's carry `PopoverCloseReason`
+    // (`OpenChangeDetail<PopoverCloseReason>`). Widening this would break narrowly typed listeners.
     'sf:open-change': CustomEvent<OpenChangeDetail>
   }
 }
@@ -73,22 +77,12 @@ const closers = new WeakMap<
 >()
 const live = new Set<DialogController>()
 
-/** The element the last pointer press landed on: Safari does not focus a clicked button. */
-let lastPressed: HTMLElement | null = null
 let documentListeners = false
 
 function listenOnDocument() {
   if (documentListeners || typeof document === 'undefined') return
   documentListeners = true
-  document.addEventListener(
-    'pointerdown',
-    (event) => {
-      const target = event.target instanceof Element ? event.target : null
-      lastPressed =
-        target?.closest<HTMLElement>('button, a[href], [tabindex]') ?? null
-    },
-    true,
-  )
+  trackPresses()
   // Browsers without Invoker Commands: the same `command` / `commandfor` buttons, run by script.
   if (!('command' in HTMLButtonElement.prototype)) {
     document.addEventListener('click', (event) => {
@@ -205,12 +199,7 @@ export function createDialog(dialog: HTMLDialogElement): DialogController {
         emit({ open: true })
         return
       }
-      const focused = document.activeElement
-      returnFocus =
-        opener ??
-        (focused instanceof HTMLElement && focused !== document.body
-          ? focused
-          : lastPressed)
+      returnFocus = opener ?? currentOpener()
       release = lockScroll()
       dialog.showModal()
       setState('open')

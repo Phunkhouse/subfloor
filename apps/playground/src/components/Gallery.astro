@@ -4,6 +4,7 @@
  * the real one on this page. Later phases are shown as planned.
  */
 import Drawer from '@subfloor/astro/Drawer.astro'
+import Menu from '@subfloor/astro/Menu.astro'
 import MobileNav from '@subfloor/astro/MobileNav.astro'
 import Modal from '@subfloor/astro/Modal.astro'
 import { url } from '../lib/url'
@@ -33,8 +34,14 @@ const built = [
     text: 'The phone menu; a followed link closes it.',
     page: '/mobile-nav/',
   },
+  {
+    id: 'menu',
+    name: 'Popover and Menu',
+    text: 'A panel beside its button that nothing clips.',
+    page: '/popover/',
+  },
 ]
-const planned = ['Popover / Dropdown', 'Toast', 'Tabs', 'Form fields']
+const planned = ['Toast', 'Tabs', 'Form fields']
 ---
 
 <section class="gallery" aria-labelledby="gallery-title">
@@ -56,14 +63,28 @@ const planned = ['Popover / Dropdown', 'Toast', 'Tabs', 'Form fields']
           <a href={url(c.page)}>{c.name}</a>
         </h3>
         <p>{c.text}</p>
-        <button
-          type="button"
-          id={`gallery-open-${c.id}`}
-          command="show-modal"
-          commandfor={`gallery-${c.id}`}
-        >
-          Try it
-        </button>
+        {c.id === 'menu' ? (
+          <Menu
+            id="gallery-menu"
+            label="Try it"
+            menuLabel="Example actions"
+            items={[
+              { label: 'Edit' },
+              { label: 'Duplicate' },
+              'separator',
+              { label: 'Delete', danger: true },
+            ]}
+          />
+        ) : (
+          <button
+            type="button"
+            id={`gallery-open-${c.id}`}
+            command="show-modal"
+            commandfor={`gallery-${c.id}`}
+          >
+            Try it
+          </button>
+        )}
       </li>
     ))}
     {planned.map((name) => (
@@ -211,6 +232,12 @@ const planned = ['Popover / Dropdown', 'Toast', 'Tabs', 'Form fields']
   [data-kind='mobile-nav'] .panel {
     inset: 0 0 0 45%;
     gap: 7px;
+  }
+
+  [data-kind='menu'] .panel {
+    inset: 34% auto auto 12%;
+    width: 45%;
+    border-radius: 6px;
   }
 
   [data-kind='sheet'] .panel {
