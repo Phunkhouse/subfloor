@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test'
 
 const port = 4322
 
-// Chromium and WebKit, desktop and phone. Headless Chromium hides scrollbars by default, which
+// Chromium and WebKit, desktop and phone, and desktop Firefox. Headless Chromium hides scrollbars by default, which
 // would make the layout-shift test (R-02) pass without proving anything, so they are turned back on.
 export default defineConfig({
   testDir: 'e2e',
@@ -23,6 +23,7 @@ export default defineConfig({
       },
     },
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
     { name: 'mobile-chromium', use: { ...devices['Pixel 7'] } },
     { name: 'mobile-webkit', use: { ...devices['iPhone 15'] } },
   ],

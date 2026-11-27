@@ -152,7 +152,8 @@ for (const c of cases) {
           })
           .toBeGreaterThan(0)
       } else {
-        // WebKit on macOS keeps overlay scrollbars even when styled; Linux WebKit (CI) has classic ones.
+        // WebKit and Firefox on macOS keep overlay scrollbars even when styled; on Linux (CI) they
+        // may have classic ones.
         await page.waitForTimeout(100)
         test.skip(
           (await scrollbar()) === 0,
@@ -177,11 +178,14 @@ for (const c of cases) {
     }) => {
       const dialog = await open(page, c)
       // Native modal behaviour, kept on purpose: after the last control, Tab may pass through the
-      // browser's own UI (the document loses focus) and comes back into the dialog. It never
-      // reaches the page behind it.
+      // browser's own UI (the document loses focus; Firefox focuses the document itself, the
+      // body) and comes back into the dialog. It never reaches a control on the page behind it.
       const inside = () =>
         dialog.evaluate(
-          (el) => el.contains(document.activeElement) || !document.hasFocus(),
+          (el) =>
+            el.contains(document.activeElement) ||
+            !document.hasFocus() ||
+            document.activeElement === document.body,
         )
       expect(
         await dialog.evaluate((el) => el.contains(document.activeElement)),
@@ -210,7 +214,7 @@ for (const c of cases) {
           await dialog.evaluate((el) =>
             el.contains(document.activeElement)
               ? 'dialog'
-              : document.hasFocus()
+              : document.hasFocus() && document.activeElement !== document.body
                 ? 'page'
                 : 'ui',
           ),

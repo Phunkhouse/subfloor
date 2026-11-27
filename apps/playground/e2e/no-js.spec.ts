@@ -49,12 +49,15 @@ for (const c of placements) {
     await page.locator(c.trigger).click()
     await expect(dialog).toBeVisible()
     expect(await dialog.evaluate((el) => el.matches(':modal'))).toBe(true)
-    // Measure where it ends up, after the opening transition.
-    await dialog.evaluate((el) =>
-      Promise.allSettled(
-        el.getAnimations().map((animation) => animation.finished),
-      ),
-    )
+    // Measure where it ends up, after the opening transition. Polled: with JavaScript off,
+    // Firefox never settles a promise returned to the test.
+    await expect
+      .poll(() =>
+        dialog.evaluate((el) =>
+          el.getAnimations().every((a) => a.playState === 'finished'),
+        ),
+      )
+      .toBe(true)
 
     const box = (await dialog.boundingBox())!
     const viewport = page.viewportSize()!

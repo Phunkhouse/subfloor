@@ -37,7 +37,7 @@
 - `pnpm lint`: ESLint (`@eslint/js`, `typescript-eslint`, `eslint-plugin-astro`, React hooks rules).
 - `pnpm typecheck`: builds the packages (the playground imports their `dist/`), then `tsc` per package and `astro check` in the playground. TypeScript is pinned to 6.0.x for `@astrojs/check` and `typescript-eslint`.
 - `pnpm test`: Vitest unit tests in `packages/*/test/` (scroll lock, eject). Only where there is logic; behaviour is proven in the browser.
-- `pnpm test:e2e`: builds, then Playwright in `apps/playground/e2e/` on Chromium, WebKit, Pixel 7 and iPhone 15, with and without JavaScript. First run: `pnpm --filter playground exec playwright install chromium webkit`.
+- `pnpm test:e2e`: builds, then Playwright in `apps/playground/e2e/` on Chromium, WebKit, Firefox, Pixel 7 and iPhone 15, with and without JavaScript. First run: `pnpm --filter playground exec playwright install chromium webkit firefox`.
 - `pnpm verify`: `format:check`, `lint`, `typecheck`, `test` and `build`; changes no tracked files. CI runs it (`ci.yml`) and `test:e2e` (`e2e.yml`).
 - GitHub Pages: `.github/workflows/pages.yml` builds the playground with `SITE` and `BASE_PATH=/<repository>/` on every push to `main` and publishes it. Links in the playground go through `url()` (`apps/playground/src/lib/url.ts`) so they work under that base path. Preview it locally: `BASE_PATH=/subfloor/ pnpm build`, then `BASE_PATH=/subfloor/ pnpm --filter playground exec astro preview`.
 - `pnpm changeset`: records a version bump and changelog entry for the published packages.
@@ -109,7 +109,7 @@ Vikunja at https://tasks.david-krapka.eu is the owner's planning queue and the b
 - **Customisable without forking.** Every visual value is a `--sf-*` token in `tokens.css`. All kit CSS is inside `@layer subfloor`. Variants and state are data attributes (`data-placement`, `data-state`); parts are `sf-<component>__<part>` classes. Never use `!important` or ids in kit CSS.
 - **Accessible by default:** focus moves in and returns to the opener, Escape closes, roles and names are correct, `prefers-reduced-motion` turns motion off, touch targets use `--sf-touch-target`.
 - **Without JavaScript** the markup must work as far as the platform allows; document what needs the script on the component's playground page.
-- **Every component** has a playground page (`apps/playground/src/pages/`) with a live demo, the markup, its tokens (`TokenTable`) and how to customise it, and Playwright tests for its requirements on all four projects. A pitfall found in a consuming project becomes a numbered requirement in `docs/SPEC.md` and a test before the fix.
+- **Every component** has a playground page (`apps/playground/src/pages/`) with a live demo, the markup, its tokens (`TokenTable`) and how to customise it, and Playwright tests for its requirements on all five projects. A pitfall found in a consuming project becomes a numbered requirement in `docs/SPEC.md` and a test before the fix.
 - **Public API:** exports of `@subfloor/core` (`src/ui.ts`), `@subfloor/react` (`src/index.ts`), the Astro component props, the markup classes, data attributes, events (`sf:open-change`) and tokens. Changing any of them needs a changeset; removing or renaming one is a breaking change and needs the owner's word.
 - **Eject** (`packages/core/bin/eject.mjs`): when a component gains a file, add it to `COMPONENTS` there.
 - **Later phases** (popover/dropdown, toast, tabs, form fields) are tasks in the Vikunja queue. Keep the current API open for them; do not build them unasked.

@@ -1,6 +1,7 @@
 name: E2E
 
-# Playwright on Chromium and WebKit, desktop and phone (starter pack playwright-e2e recipe,
+# Playwright on Chromium and WebKit, desktop and phone, and desktop Firefox; the container image
+# includes all three browsers (starter pack playwright-e2e recipe,
 # container variant: WebKit needs system libraries the plain runner lacks).
 
 on:

@@ -14,7 +14,7 @@ Users: the owner and the agents working in the owner's projects. Public on npm u
 
 - Monorepo: `@subfloor/core` (tokens, CSS, behaviour), `@subfloor/react`, `@subfloor/astro`, the playground (docs, demos, test target), Changesets, an `eject` command.
 - Tokens; **Modal** and **Drawer/Sheet** with core, React and Astro adapters and a playground page each.
-- Playwright on Chromium and WebKit, desktop and phone, proving R-01 to R-10 (R-11 to R-15 in Phase 2).
+- Playwright on Chromium and WebKit, desktop and phone, proving R-01 to R-10 (R-11 to R-15 in Phase 2). Desktop Firefox added 2026-11-27 (SUB-14).
 - `AGENTS.md` / `CLAUDE.md`, and a rules snippet for consuming projects ([consumer-rules.md](consumer-rules.md)).
 
 **Confirmed** (owner, 2026-11-27; plan approved the same day).
@@ -50,7 +50,7 @@ Components rebuilt in almost every project: dialog or sheet, phone menu, dropdow
 
 ## Requirements
 
-Each is tested in `apps/playground/e2e/` (test names start with the id) on Chromium, WebKit, Pixel 7 and iPhone 15 unless the test says why it is skipped.
+Each is tested in `apps/playground/e2e/` (test names start with the id) on Chromium, WebKit, Firefox, Pixel 7 and iPhone 15 unless the test says why it is skipped.
 
 - **R-01 No background scroll.** While an overlay is open the page does not move: not by wheel, script or touch gesture. The scroll position after closing is the one before opening. Locks nest. Approach: CSS `:root:has(dialog[data-sf-dialog]:modal) { overflow: hidden }` (works without JS) plus pinning the body with `position: fixed` and restoring the offset with `scroll-behavior: auto`. **Decided** ([0002](decisions/0002-scroll-lock.md)).
 - **R-02 No layout shift.** The content does not move sideways when the page's scrollbar goes. With the script, the root keeps an empty scrollbar track only if the page had a classic scrollbar; without it, `scrollbar-gutter: stable`. No `100vw` in kit CSS.
@@ -66,7 +66,7 @@ Each is tested in `apps/playground/e2e/` (test names start with the id) on Chrom
 - **R-12 In-page links land.** A link to a fragment of the current page closes the menu, lets the page come back to where it was, then follows the link, so the browser scrolls to the target and Tab starts there.
 - **R-13 Closes when the window grows.** `data-sf-close-at="<media query>"` closes it (reason `api`) when the query starts to match, for example once the desktop layout applies. Already closed: nothing happens. An invalid query never matches, so it never closes the menu.
 - **R-14 Focus and inertness.** No hand-set `inert`. While the menu is open nothing behind it can get focus, including the skip link (david-krapka WEB-002, Kultomat WEB-001). On close, Escape, the close button, the backdrop, R-13 and a link to another page return focus to the toggle (R-07; after a router changed the page, without scrolling to it). An in-page link moves it to the link's target (R-12). If the browser loads a new page, that page decides. Once closed, the skip link works as usual.
-- **R-15 Fixed bars do not cover focus.** `--sf-fixed-top` and `--sf-fixed-bottom` set `scroll-padding` on the root, so Tab and in-page links keep focused controls and targets clear of fixed bars (Systerna WEB-001). It is in `@layer subfloor`, so a project's own `scroll-padding` wins; the playground page says to set the tokens instead. WebKit ignores `scroll-padding` when Tab scrolls, so the core's `keepFocusClear()` scrolls a keyboard-focused control that still sits in the padding once more with `scrollIntoView({ block: 'nearest' })`, which WebKit honours (SUB-6). Every mobile nav turns it on; a page without one calls `keepFocusClear()`. It does nothing where the browser already got it right, inside an open modal dialog, or without padding. Proven on all four projects.
+- **R-15 Fixed bars do not cover focus.** `--sf-fixed-top` and `--sf-fixed-bottom` set `scroll-padding` on the root, so Tab and in-page links keep focused controls and targets clear of fixed bars (Systerna WEB-001). It is in `@layer subfloor`, so a project's own `scroll-padding` wins; the playground page says to set the tokens instead. WebKit ignores `scroll-padding` when Tab scrolls, so the core's `keepFocusClear()` scrolls a keyboard-focused control that still sits in the padding once more with `scrollIntoView({ block: 'nearest' })`, which WebKit honours (SUB-6). Every mobile nav turns it on; a page without one calls `keepFocusClear()`. It does nothing where the browser already got it right, inside an open modal dialog, or without padding. Proven on all five projects.
 
 ## Data and trust boundaries
 
@@ -90,6 +90,7 @@ No data is stored and nothing runs on a server. The packages run in the consumin
 
 ## Known limitations and risks
 
+- Firefox: after a modal's last control, Tab moves focus to the document itself (the body) before it wraps back into the dialog, where Chromium and WebKit pass through the browser's own UI. No control behind the dialog gets focus, so R-07 holds (decision 0003). Firefox on macOS has overlay scrollbars, so R-02 is skipped there as in macOS WebKit.
 - WebKit (Safari) ignores `scroll-padding` when Tab moves focus to a control: it scrolls the control only to the viewport edge, under a fixed bar. With the script, `keepFocusClear()` corrects it one frame later (R-15, SUB-6), so a WebKit user may see a second short scroll. Without JavaScript the gap remains in WebKit. Safari's Tab reaches only form fields unless the user turns on full keyboard access.
 - The `navigate` close cannot tell a full page load from a client-side route before the URL changes. A router that changes the URL after the closing transition (slow data loading) gets the old offset back and then has to scroll to the top itself; Next.js is expected to (O-07).
 - Playwright WebKit is not iOS Safari. The phone tests prove the body is pinned (the page cannot move even by script) and the offset is restored, which is what stops iOS touch scrolling, but no test drives a real finger in iOS Safari. Mobile Chromium runs a real touch scroll gesture. The manual phone check is in [design/README.md](design/README.md#manual-check-on-a-phone).
