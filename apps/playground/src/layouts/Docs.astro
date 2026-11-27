@@ -36,6 +36,19 @@ const links = pages.map((page) => ({
     />
     <title>{title} · Subfloor</title>
     {description && <meta name="description" content={description} />}
+    <!-- Without JavaScript the menu needs Invoker Commands, which older Safari lacks: show the
+         inline links on phones too, and no Menu button. -->
+    <noscript>
+      <style>
+        /* Before site.css in the page, so one more selector part to win. */
+        html .site-header .site-links {
+          display: flex;
+        }
+        html .site-header .menu-toggle {
+          display: none;
+        }
+      </style>
+    </noscript>
   </head>
   <body>
     <a class="skip-link" href="#main">

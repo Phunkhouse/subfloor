@@ -11,6 +11,7 @@ test.describe('phone width', () => {
     page,
   }) => {
     await page.goto('/modal/')
+    // data-state appears once the core's script has picked the menu up.
     await page.waitForFunction(
       () => !!document.querySelector('#site-menu[data-state]'),
     )
@@ -46,6 +47,16 @@ test.describe('wide screen', () => {
   test('the header shows the links inline and no Menu button', async ({
     page,
   }) => {
+    await page.goto('/')
+    await expect(page.locator('.site-links')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Menu' })).toBeHidden()
+  })
+})
+
+test.describe('phone width without JavaScript', () => {
+  test.use({ viewport: { width: 390, height: 800 }, javaScriptEnabled: false })
+
+  test('the inline links show instead of the Menu button', async ({ page }) => {
     await page.goto('/')
     await expect(page.locator('.site-links')).toBeVisible()
     await expect(page.getByRole('button', { name: 'Menu' })).toBeHidden()
