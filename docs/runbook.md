@@ -5,8 +5,8 @@ Subfloor has no servers. Releasing means publishing the packages to npm; the pla
 ## Environments
 
 - Local: `pnpm dev` (playground on http://localhost:4321).
-- CI: GitHub Actions `ci.yml` and `e2e.yml` on pull requests, once the repository exists. **Not set up yet.**
-- GitHub Pages: the playground at `https://phunkhouse.github.io/subfloor/` (assumed URL), deployed by `pages.yml` on every push to `main`. **Not set up yet.**
+- CI: GitHub Actions `ci.yml` and `e2e.yml` on pull requests.
+- GitHub Pages: the playground at https://phunkhouse.github.io/subfloor/, deployed by `pages.yml` on every push to `main` (enabled 2026-11-27).
 - npm: `@subfloor/core`, `@subfloor/react`, `@subfloor/astro`. **Not published.**
 
 ## Release (unverified: never run)
@@ -39,7 +39,7 @@ A broken release: deprecate it (above), tell the consuming projects' threads, fi
 ## Owner actions pending
 
 1. ~~Create the GitHub repository and push `main`~~ done 2026-11-27 (`Phunkhouse/subfloor`, public).
-2. Turn on secret scanning and Dependabot alerts (free for public repositories).
+2. ~~Secret scanning and Dependabot alerts~~ on (public repository; alerts enabled 2026-11-27).
 3. Install the Claude GitHub App and add `CLAUDE_CODE_OAUTH_TOKEN` (recipe `claude-pr-review`).
 4. Check that the `@subfloor` npm scope is free and create the organisation.
-5. Settings > Pages > Source: GitHub Actions; the first push to `main` then publishes the playground. Check the overview page and one demo there.
+5. ~~Pages source: GitHub Actions~~ done 2026-11-27.
