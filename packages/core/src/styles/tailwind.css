@@ -1,0 +1,23 @@
+/*
+ * Optional Tailwind v4 mapping. Import it before Tailwind:
+ *
+ *   @import '@subfloor/core/tailwind.css';
+ *   @import 'tailwindcss';
+ *
+ * The layer order puts `subfloor` under Tailwind's components and utilities, so a utility class
+ * on a Subfloor element wins without `!important`. The `@theme` maps the tokens to utilities
+ * (`bg-sf-surface`, `rounded-sf-overlay`, ...), which follow any override of the tokens.
+ */
+@layer theme, base, subfloor, components, utilities;
+
+@theme inline {
+  --color-sf-surface: var(--sf-color-surface);
+  --color-sf-text: var(--sf-color-text);
+  --color-sf-muted: var(--sf-color-muted);
+  --color-sf-border: var(--sf-color-border);
+  --color-sf-backdrop: var(--sf-color-backdrop);
+  --color-sf-focus: var(--sf-color-focus);
+  --radius-sf-overlay: var(--sf-radius-overlay);
+  --radius-sf-control: var(--sf-radius-control);
+  --shadow-sf-overlay: var(--sf-shadow-overlay);
+}

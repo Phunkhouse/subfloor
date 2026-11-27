@@ -1,0 +1,129 @@
+/* The docs site's own styles. Unlayered, so they win over @layer subfloor. */
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, sans-serif;
+  line-height: 1.6;
+  background: var(--sf-color-surface);
+  color: var(--sf-color-text);
+}
+
+body {
+  margin: 0;
+}
+
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--sf-color-border);
+}
+
+.site-header nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+}
+
+.brand {
+  font-weight: 700;
+}
+
+a {
+  color: inherit;
+}
+
+a[aria-current='page'] {
+  font-weight: 600;
+}
+
+main {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 1rem 1rem 4rem;
+}
+
+.lead {
+  color: var(--sf-color-muted);
+  font-size: 1.125rem;
+}
+
+.demo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border: 1px dashed var(--sf-color-border);
+  border-radius: 12px;
+}
+
+/* Scoped to the demos: a global `button` rule would also restyle the kit's close button,
+   because unlayered CSS beats @layer subfloor (that is the point of the layer). */
+:where(.demo, .sf-dialog__footer) button {
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--sf-color-border);
+  border-radius: 8px;
+  background: var(--sf-color-surface);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+:where(.demo, .sf-dialog__footer) button.primary {
+  border-color: transparent;
+  background: var(--sf-color-text);
+  color: var(--sf-color-surface);
+}
+
+label {
+  display: grid;
+  gap: 0.25rem;
+  margin-block: 0.75rem;
+}
+
+input {
+  min-height: 44px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--sf-color-border);
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+th,
+td {
+  padding: 0.375rem 0.5rem;
+  border-bottom: 1px solid var(--sf-color-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+pre {
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 0.875rem;
+}
+
+.note {
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--sf-color-focus);
+  background: var(--sf-color-hover);
+}
+
+.filler p {
+  color: var(--sf-color-muted);
+}

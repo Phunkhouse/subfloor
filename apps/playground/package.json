@@ -1,0 +1,27 @@
+{
+  "name": "playground",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@astrojs/react": "7.1.9",
+    "@subfloor/astro": "workspace:*",
+    "@subfloor/core": "workspace:*",
+    "@subfloor/react": "workspace:*",
+    "astro": "7.4.13",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@playwright/test": "1.65.1",
+    "@types/react": "19.3.3",
+    "@types/react-dom": "19.3.0"
+  }
+}

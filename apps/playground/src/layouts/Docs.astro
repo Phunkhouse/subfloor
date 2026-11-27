@@ -1,0 +1,54 @@
+---
+import '@subfloor/core/tokens.css'
+import '@subfloor/core/components.css'
+import '../styles/site.css'
+
+interface Props {
+  title: string
+  description?: string
+}
+
+const { title, description } = Astro.props
+const pages = [
+  { href: '/', label: 'Overview' },
+  { href: '/modal/', label: 'Modal' },
+  { href: '/drawer/', label: 'Drawer and Sheet' },
+  { href: '/react/', label: 'React adapter' },
+]
+const current = Astro.url.pathname
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>{title} · Subfloor</title>
+    {description && <meta name="description" content={description} />}
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">
+        Subfloor
+      </a>
+      <nav aria-label="Pages">
+        {pages.map((page) => (
+          <a
+            href={page.href}
+            aria-current={current === page.href ? 'page' : undefined}
+          >
+            {page.label}
+          </a>
+        ))}
+      </nav>
+    </header>
+    <main id="main">
+      <h1>{title}</h1>
+      {description && <p class="lead">{description}</p>}
+      <slot />
+    </main>
+  </body>
+</html>

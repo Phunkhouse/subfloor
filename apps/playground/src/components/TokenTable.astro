@@ -1,0 +1,38 @@
+---
+/** The tokens with their defaults, read from the built tokens.css so the table never drifts. */
+import tokens from '@subfloor/core/tokens.css?raw'
+
+interface Props {
+  /** Only tokens whose name contains one of these. */
+  only?: string[]
+}
+
+const { only } = Astro.props
+const light = tokens.split('@media')[0] ?? ''
+const rows = [...light.matchAll(/(--sf-[\w-]+):\s*([^;]+);/g)]
+  .map(([, name, value]) => ({ name: name ?? '', value: (value ?? '').trim() }))
+  .filter((row) => !only || only.some((part) => row.name.includes(part)))
+---
+
+<div class="table-scroll">
+  <table>
+    <thead>
+      <tr>
+        <th>Token</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((row) => (
+        <tr>
+          <td>
+            <code>{row.name}</code>
+          </td>
+          <td>
+            <code>{row.value}</code>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

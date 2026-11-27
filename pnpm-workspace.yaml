@@ -1,0 +1,7 @@
+packages:
+  - packages/*
+  - apps/*
+# pnpm 12 fails installs when a dependency's build script is neither allowed nor denied.
+allowBuilds:
+  esbuild: true # bundler used by tsup and Astro (Vite)
+  sharp: false # Astro image service; the playground has no images

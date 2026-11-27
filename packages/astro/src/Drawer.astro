@@ -1,0 +1,16 @@
+---
+/** A drawer along an edge (`end` by default), or a bottom sheet with `placement="bottom"`. */
+import type { ComponentProps } from 'astro/types'
+import Dialog from './Dialog.astro'
+
+type Props = Omit<ComponentProps<typeof Dialog>, 'placement'> & {
+  placement?: 'start' | 'end' | 'bottom'
+}
+
+const { placement = 'end', ...rest } = Astro.props
+---
+
+<Dialog {...rest} placement={placement}>
+  <slot />
+  <slot name="footer" slot="footer" />
+</Dialog>

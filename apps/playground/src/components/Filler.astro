@@ -1,0 +1,18 @@
+---
+/** Enough text to make the page (or a dialog body) scroll; the tests scroll it. */
+interface Props {
+  paragraphs?: number
+  label?: string
+}
+const { paragraphs = 12, label = 'Content' } = Astro.props
+---
+
+<div class="filler">
+  {Array.from({ length: paragraphs }, (_, i) => (
+    <p>
+      {label} {i + 1}. Background text that only exists so there is something to
+      scroll. When an overlay is open, this must stay exactly where it is,
+      whatever the wheel, the keyboard or a finger does.
+    </p>
+  ))}
+</div>

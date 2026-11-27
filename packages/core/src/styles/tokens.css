@@ -1,0 +1,60 @@
+/*
+ * Subfloor tokens. Every visual value the components use is one of these custom properties.
+ * Override them anywhere (on :root, on a wrapper, on one component) without `!important`: they
+ * sit in `@layer subfloor`, which loses to unlayered project CSS and to later layers.
+ */
+@layer subfloor {
+  :root {
+    /* Colour */
+    --sf-color-surface: #fff;
+    --sf-color-text: #18181b;
+    --sf-color-muted: #52525b;
+    --sf-color-border: #e4e4e7;
+    --sf-color-backdrop: rgb(9 9 11 / 50%);
+    --sf-color-focus: #2563eb;
+    --sf-color-hover: rgb(9 9 11 / 6%);
+
+    /* Shape and depth */
+    --sf-radius-overlay: 12px;
+    --sf-radius-control: 8px;
+    --sf-border-width: 1px;
+    --sf-shadow-overlay: 0 20px 50px rgb(0 0 0 / 20%);
+
+    /* Space */
+    --sf-space-1: 0.25rem;
+    --sf-space-2: 0.5rem;
+    --sf-space-3: 0.75rem;
+    --sf-space-4: 1rem;
+    --sf-space-6: 1.5rem;
+
+    /* Type */
+    --sf-title-size: 1.125rem;
+    --sf-title-weight: 600;
+    --sf-title-line-height: 1.4;
+
+    /* Size */
+    --sf-touch-target: 44px;
+    --sf-overlay-gutter: var(--sf-space-4);
+    --sf-dialog-width: 32rem;
+    --sf-drawer-width: 24rem;
+    --sf-sheet-max-height: 90dvh;
+
+    /* Motion: set the durations to 0s to turn it off. Reduced motion turns it off already. */
+    --sf-duration-enter: 200ms;
+    --sf-duration-exit: 150ms;
+    --sf-ease-enter: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --sf-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --sf-color-surface: #18181b;
+      --sf-color-text: #fafafa;
+      --sf-color-muted: #a1a1aa;
+      --sf-color-border: #3f3f46;
+      --sf-color-backdrop: rgb(0 0 0 / 65%);
+      --sf-color-focus: #60a5fa;
+      --sf-color-hover: rgb(255 255 255 / 8%);
+    }
+  }
+}

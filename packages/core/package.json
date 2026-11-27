@@ -1,0 +1,41 @@
+{
+  "name": "@subfloor/core",
+  "version": "0.0.0",
+  "description": "Native-first overlay behaviour, tokens and CSS: the layer under the visible design.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/ui.d.ts",
+      "default": "./dist/ui.js"
+    },
+    "./tokens.css": "./dist/tokens.css",
+    "./components.css": "./dist/components.css",
+    "./tailwind.css": "./dist/tailwind.css",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "subfloor": "./bin/subfloor.mjs"
+  },
+  "files": [
+    "dist",
+    "src",
+    "bin"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup && node scripts/build-css.mjs",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "tsup": "9.0.0"
+  }
+}

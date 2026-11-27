@@ -1,0 +1,125 @@
+---
+import { Code } from 'astro:components'
+import Drawer from '@subfloor/astro/Drawer.astro'
+import Docs from '../layouts/Docs.astro'
+import Filler from '../components/Filler.astro'
+import TokenTable from '../components/TokenTable.astro'
+
+const usage = `---
+import Drawer from '@subfloor/astro/Drawer.astro'
+---
+<button command="show-modal" commandfor="filters">Filters</button>
+
+<!-- placement: "end" (default) | "start" | "bottom" (a sheet) -->
+<Drawer id="filters" title="Filters" placement="end">
+  …
+</Drawer>`
+
+const custom = `.wide-drawer {
+  --sf-drawer-width: 32rem;
+}
+.short-sheet {
+  --sf-sheet-max-height: 60dvh;
+}`
+
+const items = Array.from({ length: 30 }, (_, i) => `Option ${i + 1}`)
+---
+
+<Docs
+  title="Drawer and Sheet"
+  description="The modal dialog along an edge, or from the bottom on a phone. Same behaviour, different placement."
+>
+  <section class="demo" aria-label="Demo">
+    <button
+      id="open-drawer-end"
+      class="primary"
+      command="show-modal"
+      commandfor="drawer-end"
+    >
+      Open drawer (end)
+    </button>
+    <button
+      id="open-drawer-start"
+      command="show-modal"
+      commandfor="drawer-start"
+    >
+      Open drawer (start)
+    </button>
+    <button id="open-sheet" command="show-modal" commandfor="sheet">
+      Open sheet
+    </button>
+    <button id="background-button" type="button">
+      A button on the page
+    </button>
+  </section>
+
+  <Drawer id="drawer-end" title="Filters">
+    <label>
+      Search <input id="drawer-input" />
+    </label>
+    <Filler paragraphs={14} label="Filter" />
+  </Drawer>
+
+  <Drawer id="drawer-start" title="Menu" placement="start">
+    <nav aria-label="Example">
+      <ul>
+        <li>
+          <a href="/">Overview</a>
+        </li>
+        <li>
+          <a href="/modal/">Modal</a>
+        </li>
+        <li>
+          <a href="/react/">React adapter</a>
+        </li>
+      </ul>
+    </nav>
+  </Drawer>
+
+  <Drawer id="sheet" title="Choose one" placement="bottom">
+    <ul id="sheet-list">
+      {items.map((item) => (
+        <li>{item}</li>
+      ))}
+    </ul>
+  </Drawer>
+
+  <h2>Astro</h2>
+  <Code code={usage} lang="astro" />
+  <p>
+    React has the same component: <code>&lt;Drawer placement="bottom"&gt;</code>{' '}
+    from
+    <code>@subfloor/react</code>. The markup is the Modal's with another
+    <code>data-placement</code>.
+  </p>
+
+  <h2>Behaviour</h2>
+  <ul>
+    <li>
+      Everything the <a href="/modal/">Modal</a> does: scroll lock, focus,
+      Escape, backdrop, inert page.
+    </li>
+    <li>
+      A drawer is the full dynamic viewport height (<code>100dvh</code>), so the
+      mobile address bar does not cut it off.
+    </li>
+    <li>
+      A sheet is as tall as its content up to <code>--sf-sheet-max-height</code>
+      ; its body scrolls and never hands the scroll on to the page (
+      <code>overscroll-behavior: contain</code>). It keeps clear of the home
+      indicator (<code>env(safe-area-inset-bottom)</code>).
+    </li>
+    <li>
+      It slides in from its edge; under reduced motion it appears at once.
+    </li>
+  </ul>
+
+  <h2>Customisation</h2>
+  <Code code={custom} lang="css" />
+  <TokenTable
+    only={['drawer', 'sheet', 'overlay', 'backdrop', 'duration', 'ease']}
+  />
+
+  <h2>Background</h2>
+  <Filler />
+</Docs>

@@ -1,0 +1,35 @@
+{
+  "name": "subfloor",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.9.1",
+  "engines": {
+    "node": ">=26 <27"
+  },
+  "scripts": {
+    "dev": "pnpm --filter playground dev",
+    "build": "pnpm -r --filter './packages/*' run build && pnpm --filter playground build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "typecheck": "pnpm -r --filter './packages/*' run build && pnpm -r typecheck",
+    "test": "vitest run",
+    "test:e2e": "pnpm build && pnpm --filter playground test:e2e",
+    "verify": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "changeset": "changeset"
+  },
+  "devDependencies": {
+    "@changesets/cli": "3.0.3",
+    "@eslint/js": "10.0.1",
+    "@types/node": "26.0.0",
+    "eslint": "10.15.0",
+    "eslint-plugin-astro": "3.2.2",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "jsdom": "31.0.1",
+    "prettier": "3.10.1",
+    "prettier-plugin-astro": "1.1.2",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "8.74.0",
+    "vitest": "5.1.2"
+  }
+}

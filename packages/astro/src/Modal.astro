@@ -1,0 +1,12 @@
+---
+/** A centred modal dialog. Props and slots as in Dialog.astro. */
+import type { ComponentProps } from 'astro/types'
+import Dialog from './Dialog.astro'
+
+type Props = Omit<ComponentProps<typeof Dialog>, 'placement'>
+---
+
+<Dialog {...Astro.props} placement="center">
+  <slot />
+  <slot name="footer" slot="footer" />
+</Dialog>

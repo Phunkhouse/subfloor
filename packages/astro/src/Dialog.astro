@@ -1,0 +1,73 @@
+---
+/**
+ * Renders the @subfloor/core dialog markup; the behaviour is the core's `createDialog`, loaded by
+ * the script below. Open it with a button anywhere on the page:
+ *   <button command="show-modal" commandfor="my-id">Open</button>
+ * That works without JavaScript in browsers with Invoker Commands.
+ */
+import type { HTMLAttributes } from 'astro/types'
+
+export interface Props extends Omit<HTMLAttributes<'dialog'>, 'title'> {
+  id: string
+  title: string
+  /** `center` is a modal; `start` and `end` are drawers; `bottom` is a sheet. */
+  placement?: 'center' | 'start' | 'end' | 'bottom'
+  /** Accessible name of the close button. */
+  closeLabel?: string
+}
+
+const {
+  id,
+  title,
+  placement = 'center',
+  closeLabel = 'Close',
+  class: className,
+  ...rest
+} = Astro.props
+const titleId = `${id}-title`
+// Rendered first, so a footer slot forwarded empty by Modal or Drawer leaves no empty footer.
+const footer = Astro.slots.has('footer')
+  ? (await Astro.slots.render('footer')).trim()
+  : ''
+---
+
+<dialog
+  {...rest}
+  id={id}
+  class:list={['sf-dialog', className]}
+  data-sf-dialog=""
+  data-placement={placement}
+  aria-labelledby={titleId}
+  closedby="any"
+>
+  <header class="sf-dialog__header">
+    <h2 id={titleId} class="sf-dialog__title">
+      {title}
+    </h2>
+    <form method="dialog" class="sf-dialog__close-form">
+      <button class="sf-dialog__close" value="close" aria-label={closeLabel}>
+        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M6 6l12 12M18 6 6 18"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          ></path>
+        </svg>
+      </button>
+    </form>
+  </header>
+  <div class="sf-dialog__body">
+    <slot />
+  </div>
+  {footer && <footer class="sf-dialog__footer" set:html={footer} />}
+</dialog>
+
+<script>
+  import { destroyDialogs, initDialogs } from '@subfloor/core'
+
+  initDialogs()
+  // With view transitions: release the page before a swap, pick up the new page's dialogs after.
+  document.addEventListener('astro:before-swap', () => destroyDialogs())
+  document.addEventListener('astro:page-load', () => initDialogs())
+</script>

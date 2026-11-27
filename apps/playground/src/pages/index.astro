@@ -1,0 +1,74 @@
+---
+import { Code } from 'astro:components'
+import Docs from '../layouts/Docs.astro'
+import TokenTable from '../components/TokenTable.astro'
+
+const install = `pnpm add @subfloor/core @subfloor/astro   # Astro
+pnpm add @subfloor/core @subfloor/react   # React / Next.js`
+
+const css = `/* Once, in the global stylesheet or layout */
+@import '@subfloor/core/tokens.css';
+@import '@subfloor/core/components.css';`
+
+const tailwind = `/* With Tailwind v4: the mapping first, so its layer order applies */
+@import '@subfloor/core/tailwind.css';
+@import 'tailwindcss';
+@import '@subfloor/core/tokens.css';
+@import '@subfloor/core/components.css';`
+---
+
+<Docs
+  title="Subfloor"
+  description="The layer under the visible design: overlays that do not let the page scroll behind them, keep focus where it belongs and work before JavaScript arrives."
+>
+  <h2>Principles</h2>
+  <ul>
+    <li>
+      <strong>Native first.</strong> <code>&lt;dialog&gt;</code> with{' '}
+      <code>showModal()</code>, Invoker Commands, <code>:has()</code>,{' '}
+      <code>dvh</code>, <code>overscroll-behavior</code>. A little TypeScript
+      only where the platform falls short: the iOS scroll lock, exit
+      transitions,
+      <code>data-state</code>.
+    </li>
+    <li>
+      <strong>One core, thin adapters.</strong> Behaviour and CSS live in{' '}
+      <code>@subfloor/core</code>;<code>@subfloor/react</code> and{' '}
+      <code>@subfloor/astro</code> only render its markup.
+    </li>
+    <li>
+      <strong>Customise without forking.</strong> Every visual value is a token;
+      all kit CSS is in
+      <code>@layer subfloor</code>, so your CSS and utility classes win without
+      <code>!important</code>.
+    </li>
+  </ul>
+
+  <h2>Install</h2>
+  <Code code={install} lang="sh" />
+  <Code code={css} lang="css" />
+  <Code code={tailwind} lang="css" />
+
+  <h2>Components</h2>
+  <ul>
+    <li>
+      <a href="/modal/">Modal</a>: a centred dialog.
+    </li>
+    <li>
+      <a href="/drawer/">Drawer and Sheet</a>: the same dialog along an edge or
+      from the bottom.
+    </li>
+    <li>
+      <a href="/react/">React adapter</a>: the same components in React (Next.js
+      App Router).
+    </li>
+  </ul>
+
+  <h2>Tokens</h2>
+  <p>
+    Defaults below; dark values apply under{' '}
+    <code>prefers-color-scheme: dark</code>. Override any of them on{' '}
+    <code>:root</code>, a wrapper or one component.
+  </p>
+  <TokenTable />
+</Docs>

@@ -1,0 +1,60 @@
+---
+import { Code } from 'astro:components'
+import Docs from '../layouts/Docs.astro'
+import Filler from '../components/Filler.astro'
+import ReactDemo from '../components/ReactDemo'
+
+const usage = `'use client' // only in the component that holds the state
+import { Drawer, Modal } from '@subfloor/react'
+import { useState } from 'react'
+
+export function DeleteProject() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <button onClick={() => setOpen(true)}>Delete project</button>
+      <Modal
+        title="Delete project?"
+        open={open}
+        onOpenChange={(next, reason) => setOpen(next)}
+        footer={<button onClick={() => setOpen(false)}>Cancel</button>}
+      >
+        <p>This removes the project and its history.</p>
+      </Modal>
+    </>
+  )
+}`
+---
+
+<Docs
+  title="React adapter"
+  description="@subfloor/react renders the same markup and hands it to the core. It works in the Next.js App Router and renders closed on the server."
+>
+  <ReactDemo client:load />
+
+  <h2>Usage</h2>
+  <Code code={usage} lang="tsx" />
+  <ul>
+    <li>
+      Keep the component mounted and drive it with <code>open</code>; unmounting
+      it skips the closing transition.
+    </li>
+    <li>
+      <code>onOpenChange</code> is called once for each change the user makes
+      (Escape, backdrop, close button, a <code>commandfor</code> button), never
+      for a change you made through
+      <code>open</code>.
+    </li>
+    <li>
+      Without <code>open</code> it is uncontrolled: open it with
+      <code>
+        &lt;button command="show-modal" commandfor=&#123;id&#125;&gt;
+      </code>{' '}
+      and give it an
+      <code>id</code>.
+    </li>
+  </ul>
+
+  <h2>Background</h2>
+  <Filler />
+</Docs>

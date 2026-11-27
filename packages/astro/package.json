@@ -1,0 +1,28 @@
+{
+  "name": "@subfloor/astro",
+  "version": "0.0.0",
+  "description": "Astro components for @subfloor/core, shipped as source.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./Dialog.astro": "./src/Dialog.astro",
+    "./Modal.astro": "./src/Modal.astro",
+    "./Drawer.astro": "./src/Drawer.astro",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "astro-component"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@subfloor/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "astro": ">=5.0.0"
+  }
+}
