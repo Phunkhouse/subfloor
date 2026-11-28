@@ -132,15 +132,43 @@ test('R-24: announced with the right role, the words just after, and focus never
     const el = document.querySelector<HTMLElement>('.sf-toast')!
     return {
       role: el.getAttribute('role'),
-      hidden: el.querySelector<HTMLElement>('.sf-toast__message')!.hidden,
+      announced: el.querySelector('.sf-toast__announce')!.textContent,
+      heardTwice:
+        el.querySelector('.sf-toast__message')!.getAttribute('aria-hidden') !==
+        'true',
     }
   })
-  expect(early).toEqual({ role: 'status', hidden: true })
+  // The words are seen at once but heard only from the copy, filled in just after.
+  expect(early).toEqual({ role: 'status', announced: '', heardTwice: false })
   await expect(toast(page).locator('.sf-toast__message')).toBeVisible()
+  await expect(toast(page).locator('.sf-toast__announce')).toHaveText(
+    'Changes saved',
+  )
   await expect(button).toBeFocused()
 
   await page.locator('#toast-problem').click()
   await expect(toast(page)).toHaveAttribute('role', 'alert')
+})
+
+test('R-24: it appears at its final size: the words do not arrive after the box', async ({
+  page,
+}) => {
+  await load(page)
+  // Width and height in the frame it is shown, and again once the announcement has gone out.
+  const sizes = await page.evaluate(
+    () =>
+      new Promise<{ first: number[]; later: number[] }>((resolve) => {
+        document.getElementById('toast-done')!.click()
+        const t = document.querySelector<HTMLElement>('.sf-toast')!
+        const size = () => {
+          const r = t.getBoundingClientRect()
+          return [Math.round(r.width), Math.round(r.height)]
+        }
+        const first = size()
+        setTimeout(() => resolve({ first, later: size() }), 400)
+      }),
+  )
+  expect(sizes.first).toEqual(sizes.later)
 })
 
 test('R-25: it closes after its time, but not while hovered', async ({

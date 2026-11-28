@@ -58,6 +58,16 @@
     transition-timing-function: var(--sf-ease-exit);
   }
 
+  /* What screen readers hear (the visible message is hidden from them); see R-24. */
+  .sf-toast__announce {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
   .sf-toast__message {
     flex: 1 1 auto;
     min-width: 0;

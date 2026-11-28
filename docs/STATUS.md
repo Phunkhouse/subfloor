@@ -2,21 +2,21 @@
 
 Rewritten, not appended, at every handoff and whenever the state changes materially. Under one page; history lives in Git.
 
-Updated: 2026-11-28 19:40 CET by Claude (agent)
+Updated: 2026-11-28 20:30 CET by Claude (agent)
 
 ## Goal
 
-Follow-up to Claude's review of #18 (Toast, SUB-10), which was merged before the follow-up was committed.
+The toast grew once it appeared (owner, 2026-11-28): its words arrived 100 ms after the box.
 
 ## State
 
-- On branch `fix/toast-review`, PR open for the owner's review: a pause keeps the time left (R-25); a toast leaves a closing modal at once, not on its `close` event (R-23, no flicker); a replaced toast is removed at once (R-27, no overlapping fade); the announcement timer is cleared on close; comments and the React `onClose` doc. New tests for the three behaviour changes fail on the old `toast.ts` in Chromium, WebKit and Firefox. Changeset: `@subfloor/core` patch.
-- Not done from the review: a toast left in a dialog that is removed from the page waits for its own timer or the next toggle (rare; noted in the PR).
-- On `main`: Modal, Drawer/Sheet, Mobile nav, Popover and Menu, Toast, `keepFocusClear`, the Firefox project, the playground header menu. Live at https://phunkhouse.github.io/subfloor/. Not on npm. Backlog in Vikunja (`SUB`); SUB-17 (flaky menu clicks on mobile Chromium) open; Done policy `verified`.
+- Fixed on branch `fix/toast-no-growth`, PR open for the owner's review. The visible message is there from the first frame, hidden from screen readers (`aria-hidden`); a visually hidden copy `.sf-toast__announce` in the live region gets the text after 100 ms. New test: the toast's size in its first frame equals its size after the announcement (failed on all five projects before). Changeset: `@subfloor/core` patch.
+- Select plan agreed with the owner and recorded on SUB-12: a styled native `<select>` first (closed box in every browser, open list where `appearance: base-select` exists), a shared `.sf-caret` for Select and Popover/Menu buttons; a custom listbox later, only if needed.
+- On `main`: Modal, Drawer/Sheet, Mobile nav, Popover and Menu, Toast (with the review follow-up, #19), `keepFocusClear`, the Firefox project, the playground header menu. Live at https://phunkhouse.github.io/subfloor/. Not on npm. Backlog in Vikunja (`SUB`); SUB-17 open; Done policy `verified`.
 
 ## Next step
 
-Owner reviews this PR.
+Owner reviews this PR; then SUB-12 (form fields, Select first) on the owner's word.
 
 ## Blockers and open questions
 
@@ -26,8 +26,8 @@ Owner reviews this PR.
 
 ## Last verified
 
-- Commands: `pnpm verify`; `pnpm test:e2e` (macOS); three full Chromium runs; `toast.spec.ts` repeated in CI's image; the new tests against the old `toast.ts`.
-- Revision: `main` at `d37efbf` plus this branch's changes.
-- Working tree: clean after the commit; the branch commit is the follow-up.
-- Result: verify passed (11 unit tests). E2E on macOS: 456 passed, 24 skipped. Three full Chromium runs: 185 of 185 each. In CI's image: `toast.spec.ts` five times, 325 of 325. The three new tests fail on the old `toast.ts` in Chromium, WebKit and Firefox.
-- Not run: a real phone, a screen reader.
+- Commands: `pnpm verify`; `pnpm test:e2e` (macOS); `toast.spec.ts` repeated in CI's image; the new size test on the old code.
+- Revision: `main` at `404cda0` plus this branch's changes.
+- Working tree: clean after the commit; the branch commit is the fix.
+- Result: verify passed (11 unit tests). E2E on macOS: 461 passed, 24 skipped. In CI's image: `toast.spec.ts` five times, 350 of 350. The size test failed on all five projects before the fix.
+- Not run: a real screen reader (the announcement copy is the standard live-region text insertion).
