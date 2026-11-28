@@ -1,5 +1,8 @@
 'use client'
 
+// This component's styles (decision 0006); the project imports `@subfloor/core/base.css` once.
+import '@subfloor/core/styles/popover.css'
+import '@subfloor/core/styles/menu.css'
 import { createMenu } from '@subfloor/core'
 import {
   Fragment,

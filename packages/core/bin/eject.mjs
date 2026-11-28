@@ -37,6 +37,7 @@ export const COMPONENTS = {
       'src/scroll-lock.ts',
       'src/styles/dialog.css',
       'src/styles/mobile-nav.css',
+      'src/styles/page.css',
     ],
     react: ['src/Dialog.tsx', 'src/MobileNav.tsx'],
     astro: ['src/Dialog.astro', 'src/MobileNav.astro'],

@@ -13,8 +13,10 @@
       "default": "./dist/ui.js"
     },
     "./tokens.css": "./dist/tokens.css",
+    "./base.css": "./dist/base.css",
     "./components.css": "./dist/components.css",
     "./tailwind.css": "./dist/tailwind.css",
+    "./styles/*": "./dist/styles/*",
     "./package.json": "./package.json"
   },
   "bin": {

@@ -62,6 +62,7 @@ describe('eject', () => {
       'mobile-nav.css',
       'mobile-nav.ts',
       'opener.ts',
+      'page.css',
       'scroll-lock.ts',
       'transitions.ts',
     ])

@@ -1,0 +1,11 @@
+/*
+ * Page-level rules that belong to no single component: part of `base.css` and `components.css`.
+ * Requirements: docs/SPEC.md.
+ */
+@layer subfloor {
+  /* Tab, in-page links and scrollIntoView keep clear of fixed bars (R-15). Your own
+     `scroll-padding` wins over this; set the tokens instead to keep both in step. */
+  :root {
+    scroll-padding-block: var(--sf-fixed-top) var(--sf-fixed-bottom);
+  }
+}

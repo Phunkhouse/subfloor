@@ -7,6 +7,7 @@ Paste this section into a project's `AGENTS.md` (or `CLAUDE.md`).
 ## UI foundation: Subfloor
 
 - Overlays and menus come from Subfloor (`@subfloor/core` with `@subfloor/react` or `@subfloor/astro`): Modal, Drawer, Sheet, Mobile nav, Popover, Menu and Toast today; tabs as they arrive. Never hand-roll a modal, drawer, sheet, phone menu, dropdown or toast, and never add a scroll lock, focus trap or `inert` handling of your own.
+- Import `@subfloor/core/base.css` once (root layout or global stylesheet). The React and Astro components bring their own styles; do not also import `components.css` unless you use the plain-script API (`showToast`, `createDialog`) without them.
 - Customise with `--sf-*` tokens, the `sf-*__*` part classes and `data-*` attributes, in your own CSS. Subfloor's CSS is in `@layer subfloor`, so your CSS wins without `!important`. Keep global element rules (`button { … }`) scoped, or they restyle the kit's parts too.
 - If Subfloor lacks something or has a bug, fix it in Subfloor (or ask for it there), not in this project. `subfloor eject` is the last resort and the copy stops getting fixes; record why in a decision.
 - Fixed header or bottom bar: set `--sf-fixed-top` / `--sf-fixed-bottom` to their heights instead of your own `scroll-padding`.
@@ -25,3 +26,12 @@ Before it is done, check each of these (Subfloor's own tests cover them for its 
 7. Reduced motion: no animation. Closing waits for its transition, not a timeout.
 8. With JavaScript off it opens and closes where the platform allows, and is hidden until opened.
 9. It renders closed on the server (no flash of open overlays).
+
+### Upgrading Subfloor
+
+- `@subfloor/core`, `@subfloor/react` and `@subfloor/astro` share one version; bump them together (`pnpm up @subfloor/core @subfloor/react`) and run this project's checks.
+- Patch: fixes only. Minor: new components, options, tokens or events; existing ones keep working. Major: something public removed or renamed; follow the migration notes in the package's `CHANGELOG.md`.
+- Read the changelog for behaviour changes your own tests may notice (timing, focus), new peer dependencies, and CSS notes.
+- Ejected components do not update; re-eject or port the fix by hand.
+- When Subfloor adds a component, refresh this rules section from Subfloor's `docs/consumer-rules.md`.
+

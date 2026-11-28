@@ -15,6 +15,7 @@
     "typecheck": "pnpm -r --filter './packages/*' run build && pnpm -r typecheck",
     "test": "vitest run",
     "test:e2e": "pnpm build && pnpm --filter playground test:e2e",
+    "test:next": "pnpm -r --filter './packages/*' run build && pnpm --filter next-fixture build && pnpm --filter next-fixture test:e2e",
     "verify": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "changeset": "changeset"
   },

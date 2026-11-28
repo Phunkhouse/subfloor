@@ -1,5 +1,7 @@
 'use client'
 
+// This component's styles (decision 0006); the project imports `@subfloor/core/base.css` once.
+import '@subfloor/core/styles/dialog.css'
 import {
   createDialog,
   type DialogCloseReason,

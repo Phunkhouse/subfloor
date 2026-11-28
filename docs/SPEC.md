@@ -97,7 +97,7 @@ No data is stored and nothing runs on a server. The packages run in the consumin
 - pnpm workspaces; TypeScript 6.0.x; tsup builds `@subfloor/core` and `@subfloor/react` to ESM with types; `@subfloor/astro` ships `.astro` source. Changesets with the three packages versioned together (`fixed`). **Decided** (owner's brief, 2026-11-27).
 - One behaviour for Modal, Drawer and Sheet: a native modal `<dialog>` with `data-placement` = `center`, `start`, `end` or `bottom`. **Decided** ([0001](decisions/0001-one-native-dialog.md)).
 - The React package is one client module (`'use client'` banner) so it works in the Next.js App Router; the dialog renders closed on the server. Invoker Commands attributes are typed for React by `src/invokers.ts`.
-- CSS: `tokens.css`, `components.css`, optional `tailwind.css` (`@theme inline` mapping and the layer order `theme, base, subfloor, components, utilities`).
+- CSS: a project imports `base.css` (tokens and page-level rules) once; each React and Astro component imports its own `styles/<component>.css`, so a page gets only the styles it uses. `components.css` (everything) and `tokens.css` stay for plain-script use. Optional `tailwind.css` (`@theme inline` mapping and the layer order `theme, base, subfloor, components, utilities`). **Decided** ([0006](decisions/0006-base-css-and-per-component-css.md), owner, 2026-11-28); verified in the Next.js App Router by `apps/next-fixture`.
 - Browser support: Safari/iOS 17.4+, last two versions of Chromium and Firefox. **Assumption** (owner accepted it as a default, 2026-11-27; not checked against the consuming projects' audiences).
 - Tests: Vitest for the scroll lock and `eject`; Playwright for everything a browser decides (D-03).
 
@@ -108,6 +108,7 @@ No data is stored and nothing runs on a server. The packages run in the consumin
 - D-03 Dialog behaviour is tested in real browsers only; jsdom lacks `showModal`. Agent, 2026-11-27.
 - D-04 Records [0001](decisions/0001-one-native-dialog.md), [0002](decisions/0002-scroll-lock.md), [0003](decisions/0003-native-focus-containment.md). Agent, 2026-11-27; for the owner's review.
 - D-05 Record [0004](decisions/0004-native-popover-and-anchor-positioning.md): native popover and CSS anchor positioning for panels and menus. Scope approved by the owner, 2026-11-27.
+- D-07 Record [0006](decisions/0006-base-css-and-per-component-css.md): base CSS once, component CSS brought by each component. Agreed with the owner, 2026-11-28.
 - D-06 Record [0005](decisions/0005-toast-in-the-top-layer-inside-the-open-modal.md): toast in the top layer, inside the open modal dialog. Scope approved by the owner, 2026-11-28.
 
 ## Known limitations and risks

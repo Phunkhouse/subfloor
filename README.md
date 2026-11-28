@@ -6,19 +6,23 @@ It has **Modal**, **Drawer/Sheet**, **Mobile nav**, **Popover**, **Menu** and **
 
 ## Packages
 
-| Package           | What it is                                                                                                                                                                                                                                           |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@subfloor/core`  | `tokens.css`, `components.css`, optional `tailwind.css`, and the behaviour (`createDialog`, `initDialogs`, `createMobileNav`, `createPopover`, `createMenu`, `showToast`, `lockScroll`). No runtime dependencies. Also the `subfloor eject` command. |
-| `@subfloor/react` | `Dialog`, `Modal`, `Drawer`, `MobileNav`, `Popover`, `Menu`, `Toast` for React 19; works in the Next.js App Router.                                                                                                                                  |
-| `@subfloor/astro` | `Dialog.astro`, `Modal.astro`, `Drawer.astro`, `MobileNav.astro`, `Popover.astro`, `Menu.astro`, `Toast.astro`, shipped as source.                                                                                                                   |
-| `apps/playground` | Docs and live demos of every component, and the Playwright test target.                                                                                                                                                                              |
+| Package             | What it is                                                                                                                                                                                                                                                                                     |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@subfloor/core`    | `base.css`, per-component `styles/*.css`, `components.css`, `tokens.css`, optional `tailwind.css`, and the behaviour (`createDialog`, `initDialogs`, `createMobileNav`, `createPopover`, `createMenu`, `showToast`, `lockScroll`). No runtime dependencies. Also the `subfloor eject` command. |
+| `@subfloor/react`   | `Dialog`, `Modal`, `Drawer`, `MobileNav`, `Popover`, `Menu`, `Toast` for React 19; works in the Next.js App Router.                                                                                                                                                                            |
+| `@subfloor/astro`   | `Dialog.astro`, `Modal.astro`, `Drawer.astro`, `MobileNav.astro`, `Popover.astro`, `Menu.astro`, `Toast.astro`, shipped as source.                                                                                                                                                             |
+| `apps/playground`   | Docs and live demos of every component, and the Playwright test target.                                                                                                                                                                                                                        |
+| `apps/next-fixture` | A minimal Next.js App Router app proving the React components bring their own CSS (`pnpm test:next`).                                                                                                                                                                                          |
 
 **Live playground: https://phunkhouse.github.io/subfloor/**. Usage, markup, tokens and customisation for each component are there, starting with a visual overview of the components. GitHub Pages publishes it from `main` (`.github/workflows/pages.yml`). The packages are not on npm yet.
 
 ```css
-@import '@subfloor/core/tokens.css';
-@import '@subfloor/core/components.css';
+/* Once, in the global stylesheet or root layout: tokens and page-level rules.
+   Each component brings its own styles, so a page loads only what it uses. */
+@import '@subfloor/core/base.css';
 ```
+
+Plain script without the React or Astro components (`showToast`, `createDialog`, …): import the component styles you use (`@subfloor/core/styles/toast.css`) or everything at once (`@subfloor/core/components.css`).
 
 ```astro
 ---
