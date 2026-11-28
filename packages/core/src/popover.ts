@@ -90,14 +90,15 @@ export function createPopover(element: HTMLElement): PopoverController {
   document.addEventListener(
     'keydown',
     (event) => {
-      if (event.key === 'Escape' && state === 'open') reason ??= 'escape'
+      if (event.key === 'Escape' && element.matches(':popover-open'))
+        reason ??= 'escape'
     },
     { capture: true, signal: abort.signal },
   )
   document.addEventListener(
     'pointerdown',
     (event) => {
-      if (state !== 'open') return
+      if (!element.matches(':popover-open')) return
       const target = event.target instanceof Node ? event.target : null
       if (!target || element.contains(target)) return
       const onInvoker = invokers().some((button) => button.contains(target))
@@ -106,37 +107,54 @@ export function createPopover(element: HTMLElement): PopoverController {
     { capture: true, signal: abort.signal },
   )
 
+  const recordOpen = () => {
+    if (state === 'open') return
+    run++
+    setState('open')
+    setExpanded(true)
+    emit({ open: true })
+  }
+
+  // Closing is recorded on `beforetoggle`, which fires at the moment it closes. The `toggle` event
+  // is queued and can come much later (seen in WebKit under load): until then the state, the
+  // button's `aria-expanded` and `sf:open-change` would still say open (SUB-15).
+  let closedBecause: PopoverCloseReason = 'api'
   element.addEventListener(
     'beforetoggle',
     (event) => {
-      if ((event as ToggleLikeEvent).newState !== 'open') return
-      opener = explicitOpener ?? currentOpener()
-      explicitOpener = null
+      if ((event as ToggleLikeEvent).newState === 'open') {
+        opener = explicitOpener ?? currentOpener()
+        explicitOpener = null
+        reason = null
+        return
+      }
+      // Opened and closed before the queued toggle event: report the opening first.
+      recordOpen()
+      closedBecause = reason ?? 'api'
       reason = null
+      run++
+      setState('closing')
+      setExpanded(false)
+      emit({ open: false, reason: closedBecause })
     },
     on,
   )
   element.addEventListener(
     'toggle',
     (event) => {
-      const open = (event as ToggleLikeEvent).newState === 'open'
-      const current = ++run
-      if (open) {
-        setState('open')
-        setExpanded(true)
-        emit({ open: true })
+      if ((event as ToggleLikeEvent).newState === 'open') {
+        // Opening can still be cancelled at `beforetoggle`, so it is recorded here, once it held.
+        if (element.matches(':popover-open')) recordOpen()
         return
       }
-      const why = reason ?? 'api'
-      reason = null
-      setState('closing')
-      setExpanded(false)
-      emit({ open: false, reason: why })
+      if (state !== 'closing') return
+      const current = run
       // Escape and a choice give focus back to the button; an outside press or Tab leaves it where
-      // the user put it. The browser does this too, except in Safari (nothing was focused).
+      // the user put it. The browser does this too, except in Safari (nothing was focused). Done
+      // here, after the browser's own focus step.
       const focused = document.activeElement
       if (
-        (why === 'escape' || why === 'select') &&
+        (closedBecause === 'escape' || closedBecause === 'select') &&
         opener?.isConnected &&
         (focused === document.body || element.contains(focused))
       )

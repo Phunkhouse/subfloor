@@ -74,7 +74,8 @@ export function createMenu(element: HTMLElement): MenuController {
       if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
       event.preventDefault()
       focusOnOpen = event.key === 'ArrowUp' ? 'last' : 'first'
-      if (popover.state === 'open') focusAt(focusOnOpen === 'last' ? -1 : 0)
+      if (element.matches(':popover-open'))
+        focusAt(focusOnOpen === 'last' ? -1 : 0)
       else popover.show(button)
     },
     on,
