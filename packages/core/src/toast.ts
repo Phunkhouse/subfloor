@@ -66,11 +66,14 @@ let listening = false
 /** Every toast that is shown: the place follows the open modal dialogs. */
 const shown = new Set<HTMLElement>()
 
-/** The topmost open modal dialog, or the body. */
+/** The topmost open modal dialog, or the body. A dialog already closing does not count: the
+ * toast leaves it when it starts to close, not after, so it never vanishes with it. */
 function host(): HTMLElement {
   const modals = [
     ...document.querySelectorAll<HTMLDialogElement>('dialog'),
-  ].filter((dialog) => dialog.matches(':modal'))
+  ].filter(
+    (dialog) => dialog.matches(':modal') && dialog.dataset.state !== 'closing',
+  )
   return modals.at(-1) ?? document.body
 }
 
@@ -101,7 +104,9 @@ function listen() {
     queueMicrotask(() => {
       for (const element of shown) place(element)
     })
-  // `sf:open-change` and `close` do not bubble; capture sees them on the way down.
+  // `sf:open-change` and `close` do not bubble; capture sees them on the way down. `sf:open-change`
+  // covers the kit's dialogs (also as they start to close), `close` and `toggle` dialogs opened
+  // or closed by plain `showModal()` / `close()`. `place` is idempotent, so repeats are cheap.
   document.addEventListener('sf:open-change', replace, true)
   document.addEventListener('close', replace, true)
   document.addEventListener('toggle', replace, true)
@@ -157,6 +162,10 @@ export function createToast(
   const abort = new AbortController()
   const on = { signal: abort.signal }
   let timer = 0
+  let announce = 0
+  // Time left before it closes itself: a pause keeps it, so a hover does not start it over.
+  let remaining = timeout
+  let startedAt = 0
   let hovered = false
   let focused = false
   let cameFrom: HTMLElement | null = null
@@ -168,7 +177,7 @@ export function createToast(
   element.setAttribute('role', lasts ? 'alert' : 'status')
   if (!lasts) {
     message.hidden = true
-    window.setTimeout(() => (message.hidden = false), ANNOUNCE_DELAY)
+    announce = window.setTimeout(() => (message.hidden = false), ANNOUNCE_DELAY)
   }
   // Shown by the script: the close button (hidden without it) and the top layer.
   if (closeButton) closeButton.hidden = false
@@ -178,9 +187,18 @@ export function createToast(
   place(element)
 
   const restart = () => {
-    window.clearTimeout(timer)
+    if (timer) {
+      // Running until now: keep what is left.
+      window.clearTimeout(timer)
+      timer = 0
+      remaining -= Date.now() - startedAt
+    }
     if (lasts || hovered || focused || closed) return
-    timer = window.setTimeout(() => void controller.close('timeout'), timeout)
+    startedAt = Date.now()
+    timer = window.setTimeout(
+      () => void controller.close('timeout'),
+      Math.max(remaining, 0),
+    )
   }
 
   element.addEventListener(
@@ -245,6 +263,7 @@ export function createToast(
       if (closed) return
       closed = true
       window.clearTimeout(timer)
+      window.clearTimeout(announce)
       abort.abort()
       if (current === controller) current = null
       const hadFocus = element.contains(document.activeElement)
@@ -253,7 +272,8 @@ export function createToast(
         new CustomEvent('sf:toast-close', { detail: { reason } }),
       )
       if (hadFocus && cameFrom?.isConnected) cameFrom.focus()
-      await transitionsDone(element)
+      // A replaced toast leaves at once: two must not overlap at the same place (R-27).
+      if (reason !== 'replaced') await transitionsDone(element)
       shown.delete(element)
       element.dataset.state = 'closed'
       if (supportsPopover() && element.matches(':popover-open'))

@@ -2,22 +2,21 @@
 
 Rewritten, not appended, at every handoff and whenever the state changes materially. Under one page; history lives in Git.
 
-Updated: 2026-11-28 18:40 CET by Claude (agent)
+Updated: 2026-11-28 19:40 CET by Claude (agent)
 
 ## Goal
 
-SUB-10: Toast (Phase 4, R-22 to R-27), scope approved by the owner on 2026-11-28.
+Follow-up to Claude's review of #18 (Toast, SUB-10), which was merged before the follow-up was committed.
 
 ## State
 
-- Built on branch `feat/sub-10-toast`, PR open for the owner's review: core `toast.ts` (`showToast`, `createToast`, `initToasts`, `toastElement`), `toast.css` and tokens, React `Toast` (portal; `react-dom` now a peer dependency), Astro `Toast.astro` (server-rendered), playground `/toast/` and `/toast/sent/`, gallery card, decision [0005](decisions/0005-toast-in-the-top-layer-inside-the-open-modal.md), eject `toast` (alias `snackbar`), changeset (minor, all three packages).
-- Seen in CI's image, not part of this task: two popover menu tests ("a link item navigates", "choosing an item") sometimes fail on mobile Chromium; Playwright scrolls to the item and the panel is then hidden or moved.
-- Checked before building: a toast over an open modal is inert unless it is inside that dialog (Chromium, WebKit, Firefox); the core places it there.
-- On `main`: Modal, Drawer/Sheet, Mobile nav, Popover and Menu, `keepFocusClear`, the Firefox project, the playground header menu. Live at https://phunkhouse.github.io/subfloor/. Not on npm. Backlog in Vikunja (`SUB`); Done policy `verified`.
+- On branch `fix/toast-review`, PR open for the owner's review: a pause keeps the time left (R-25); a toast leaves a closing modal at once, not on its `close` event (R-23, no flicker); a replaced toast is removed at once (R-27, no overlapping fade); the announcement timer is cleared on close; comments and the React `onClose` doc. New tests for the three behaviour changes fail on the old `toast.ts` in Chromium, WebKit and Firefox. Changeset: `@subfloor/core` patch.
+- Not done from the review: a toast left in a dialog that is removed from the page waits for its own timer or the next toggle (rare; noted in the PR).
+- On `main`: Modal, Drawer/Sheet, Mobile nav, Popover and Menu, Toast, `keepFocusClear`, the Firefox project, the playground header menu. Live at https://phunkhouse.github.io/subfloor/. Not on npm. Backlog in Vikunja (`SUB`); SUB-17 (flaky menu clicks on mobile Chromium) open; Done policy `verified`.
 
 ## Next step
 
-Owner reviews the SUB-10 PR. After the merge, the agent checks "Done when" and moves SUB-10 to Done.
+Owner reviews this PR.
 
 ## Blockers and open questions
 
@@ -27,8 +26,8 @@ Owner reviews the SUB-10 PR. After the merge, the agent checks "Done when" and m
 
 ## Last verified
 
-- Commands: `pnpm verify`; `pnpm test:e2e` (macOS); full suite and a repeated `toast.spec.ts` in CI's image; mutation checks (no placement in the modal fails R-23 and R-26; no hover pause fails R-25; Escape reaching the dialog fails R-26; no announcement delay fails R-24).
-- Revision: `main` at `d3c371a` plus this branch's changes.
-- Working tree: clean after the commit; the branch commit is SUB-10.
-- Result: verify passed (11 unit tests). E2E on macOS: 446 passed, 24 skipped. In CI's image: `toast.spec.ts` five times, 275 of 275; full run 445 passed, 24 skipped, 1 failed in a popover menu test on mobile Chromium (not the toast; offered to the owner as a Backlog task).
+- Commands: `pnpm verify`; `pnpm test:e2e` (macOS); three full Chromium runs; `toast.spec.ts` repeated in CI's image; the new tests against the old `toast.ts`.
+- Revision: `main` at `d37efbf` plus this branch's changes.
+- Working tree: clean after the commit; the branch commit is the follow-up.
+- Result: verify passed (11 unit tests). E2E on macOS: 456 passed, 24 skipped. Three full Chromium runs: 185 of 185 each. In CI's image: `toast.spec.ts` five times, 325 of 325. The three new tests fail on the old `toast.ts` in Chromium, WebKit and Firefox.
 - Not run: a real phone, a screen reader.

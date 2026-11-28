@@ -20,7 +20,8 @@ export interface ToastProps {
   action?: ToastAction
   /**
    * Called when the toast closed by itself or by the user (`timeout`, `button`, `escape`) or was
-   * replaced by another toast (`replaced`); not when you unmount it. Stop rendering it here.
+   * replaced by a toast shown elsewhere (`replaced`); not when you unmount it or render a new
+   * `key` here (that unmounts the old one first). Stop rendering it here.
    */
   onClose?: (reason: ToastCloseReason) => void
   /** Accessible name of the close button. */

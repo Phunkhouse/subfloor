@@ -65,6 +65,43 @@ test('R-23: inside an open modal its action can be pressed, and it moves back wh
   )
 })
 
+test('R-23: it leaves a closing modal at once, so it never vanishes with it', async ({
+  page,
+}) => {
+  await load(page)
+  await page.locator('#open-toast-modal').click()
+  await expect(page.locator('#toast-modal')).toHaveAttribute(
+    'data-state',
+    'open',
+  )
+  await page.locator('#toast-in-modal').click()
+  await expect(toast(page)).toBeVisible()
+  // Checked as soon as the modal says it closes (right after its sf:open-change), whether it
+  // then takes a transition or not: the toast must already be out of it and shown.
+  const during = await page.evaluate(
+    () =>
+      new Promise<{ inBody: boolean; shown: boolean }>((resolve) => {
+        const modal = document.getElementById('toast-modal')!
+        modal.addEventListener(
+          'sf:open-change',
+          () =>
+            queueMicrotask(() =>
+              queueMicrotask(() => {
+                const t = document.querySelector<HTMLElement>('.sf-toast')!
+                resolve({
+                  inBody: t.parentElement === document.body,
+                  shown: t.matches(':popover-open'),
+                })
+              }),
+            ),
+          { once: true },
+        )
+        modal.querySelector<HTMLButtonElement>('.sf-dialog__close')!.click()
+      }),
+  )
+  expect(during).toEqual({ inBody: true, shown: true })
+})
+
 test('R-23: a toast already shown moves into a modal that opens after it', async ({
   page,
 }) => {
@@ -123,6 +160,32 @@ test('R-25: it closes after its time, but not while hovered', async ({
   await expect(page.locator('.sf-toast')).toHaveCount(0)
 })
 
+test('R-25: a pause keeps the time left instead of starting over', async ({
+  page,
+}) => {
+  await load(page)
+  // Timed inside the page, so the test runner's delays do not count. A 2 s toast: 1.5 s pass,
+  // a 1 s pause, then about 0.5 s are left; the old code started 2 s over.
+  const afterPause = await page.evaluate(
+    () =>
+      new Promise<number>((resolve) => {
+        document.getElementById('toast-short')!.click()
+        const t = document.querySelector<HTMLElement>('.sf-toast')!
+        setTimeout(() => {
+          t.dispatchEvent(new PointerEvent('pointerenter'))
+          setTimeout(() => {
+            const left = Date.now()
+            t.addEventListener('sf:toast-close', () =>
+              resolve(Date.now() - left),
+            )
+            t.dispatchEvent(new PointerEvent('pointerleave'))
+          }, 1000)
+        }, 1500)
+      }),
+  )
+  expect(afterPause).toBeLessThan(1500)
+})
+
 test('R-25: a problem stays until closed', async ({ page }) => {
   await load(page)
   await page.locator('#toast-problem').click()
@@ -157,7 +220,12 @@ test('R-27: a new toast replaces the current one', async ({ page }) => {
   await load(page)
   await page.locator('#toast-done').click()
   await expect(toast(page)).toHaveText(/Changes saved/)
-  await page.locator('#toast-info').click()
+  // The replaced one leaves at once: never two in the page (no overlapping fade).
+  const count = await page.evaluate(() => {
+    document.getElementById('toast-info')!.click()
+    return document.querySelectorAll('.sf-toast').length
+  })
+  expect(count).toBe(1)
   await expect(toast(page)).toHaveCount(1)
   await expect(toast(page)).toHaveText(/Already being collected/)
   await expect(page.locator('#toast-log')).toHaveText('replaced')
