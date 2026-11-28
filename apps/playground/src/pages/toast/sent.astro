@@ -1,0 +1,17 @@
+---
+import Toast from '@subfloor/astro/Toast.astro'
+import Docs from '../../layouts/Docs.astro'
+import { url } from '../../lib/url'
+---
+
+<Docs
+  title="Message sent"
+  description="Where a form would send you: the toast comes with the page, rendered on the server."
+>
+  <p>
+    <a href={url('/toast/')}>Back to the Toast page</a>
+  </p>
+  <Toast id="sent-toast" timeout={4000}>
+    Message sent.
+  </Toast>
+</Docs>

@@ -1,0 +1,224 @@
+---
+import { Code } from 'astro:components'
+import Modal from '@subfloor/astro/Modal.astro'
+import Docs from '../layouts/Docs.astro'
+import Filler from '../components/Filler.astro'
+import ReactToastDemo from '../components/ReactToastDemo'
+import TokenTable from '../components/TokenTable.astro'
+import { url } from '../lib/url'
+
+const script = `import { showToast } from '@subfloor/core'
+
+showToast('Changes saved')
+showToast('Already being collected', { tone: 'info' })
+showToast('Could not save. Try again.', { tone: 'problem' }) // stays until closed
+
+const toast = showToast('Project archived', {
+  action: { label: 'Undo', onClick: () => restore() },
+  timeout: 8000,
+})
+toast.element.addEventListener('sf:toast-close', (event) => {
+  console.log(event.detail.reason) // timeout | button | escape | replaced | api
+})`
+
+const astro = `---
+import Toast from '@subfloor/astro/Toast.astro'
+const sent = Astro.url.searchParams.has('sent')
+---
+{sent && <Toast>Message sent.</Toast>}`
+
+const react = `'use client'
+import { Toast } from '@subfloor/react'
+
+{saved && (
+  <Toast
+    key={saved.id}
+    action={{ label: 'Undo', onClick: undo }}
+    onClose={() => setSaved(null)}
+  >
+    {saved.text}
+  </Toast>
+)}`
+
+const markup = `<div class="sf-toast" data-sf-toast data-tone="done" role="status">
+  <span class="sf-toast__message">Changes saved</span>
+  <button type="button" class="sf-toast__action">Undo</button>
+  <button type="button" class="sf-toast__close" aria-label="Dismiss">…</button>
+</div>`
+
+const custom = `:root {
+  --sf-toast-bg: #0f172a;
+  --sf-toast-max-width: 32rem;
+  --sf-fixed-bottom: 4rem; /* a fixed bottom bar: the toast keeps above it */
+}`
+---
+
+<Docs
+  title="Toast"
+  description="A short floating message that takes no space: above bars and dialogs, read out without moving focus, and gone after a few seconds unless it reports a problem."
+>
+  <section class="demo" aria-label="Demo">
+    <button id="toast-done" class="primary" type="button">
+      Saved
+    </button>
+    <button id="toast-info" type="button">
+      Info
+    </button>
+    <button id="toast-problem" type="button">
+      Problem
+    </button>
+    <button id="toast-undo" type="button">
+      With Undo
+    </button>
+    <button id="toast-short" type="button">
+      Short (2 s)
+    </button>
+    <button
+      id="open-toast-modal"
+      type="button"
+      command="show-modal"
+      commandfor="toast-modal"
+    >
+      Open a modal
+    </button>
+    <button id="background-button" type="button">
+      A button on the page
+    </button>
+  </section>
+  <p>
+    Closed: <output id="toast-log">none</output>. Undo pressed:
+    <output id="undo-log">0</output>.
+  </p>
+
+  <Modal id="toast-modal" title="A modal">
+    <p>
+      A toast shown now is placed inside this dialog, so its Undo can be
+      pressed.
+    </p>
+    <button id="toast-in-modal" type="button">
+      Show a toast with Undo
+    </button>
+  </Modal>
+
+  <h2>Script</h2>
+  <Code code={script} lang="js" />
+
+  <h2>Astro (from the server)</h2>
+  <p>
+    For a message that comes with the page, such as after a form sent you here:
+    see the <a href={url('/toast/sent/')}>example page</a>.
+  </p>
+  <Code code={astro} lang="astro" />
+
+  <h2>React</h2>
+  <Code code={react} lang="tsx" />
+  <ReactToastDemo client:load />
+
+  <h2>Markup</h2>
+  <Code code={markup} lang="html" />
+
+  <h2>Behaviour</h2>
+  <ul>
+    <li>
+      In the top layer (<code>popover="manual"</code>) at the bottom centre,
+      above a fixed bottom bar (<code>--sf-fixed-bottom</code>) and the home
+      indicator.
+    </li>
+    <li>
+      While a modal dialog is open, the toast is placed inside it: outside, the
+      dialog would make it inert even though it is drawn on top. It moves back
+      when the dialog closes.
+    </li>
+    <li>
+      <code>role="status"</code> for <code>done</code> and <code>info</code>,
+      <code>role="alert"</code> for a <code>problem</code>; the words follow the
+      toast by a moment so screen readers read them. Focus never moves to it.
+    </li>
+    <li>
+      <code>done</code> and <code>info</code> close after 6 s (
+      <code>timeout</code>), paused while the pointer is over it or focus is in
+      it. A<code>problem</code> stays until closed.
+    </li>
+    <li>
+      The × closes it; Escape closes it while focus is in it, not the dialog
+      around it. Focus goes back to where it came from.
+    </li>
+    <li>
+      One at a time: a new toast replaces the current one.{' '}
+      <code>sf:toast-close</code> reports why each one closed.
+    </li>
+  </ul>
+
+  <h2>Without JavaScript</h2>
+  <p>
+    A toast rendered on the server still shows, fixed at the bottom. Its close
+    button and timeout need the script; script toasts need it anyway.
+  </p>
+
+  <h2>Customisation</h2>
+  <Code code={custom} lang="css" />
+  <TokenTable only={['toast', 'success', 'danger', 'fixed-bottom']} />
+
+  <h2>Background</h2>
+  <Filler />
+
+  <div class="fixed-bar" aria-hidden="true">
+    A fixed bar, 3.5rem tall
+  </div>
+</Docs>
+
+<script>
+  import { showToast, type ToastOptions } from '@subfloor/core'
+
+  const closed: string[] = []
+  let undone = 0
+  const show = (text: string, options: ToastOptions = {}) => {
+    const toast = showToast(text, options)
+    toast.element.addEventListener('sf:toast-close', (event) => {
+      closed.push(event.detail.reason)
+      document.getElementById('toast-log')!.textContent = closed.join(', ')
+    })
+  }
+  const undo = {
+    label: 'Undo',
+    onClick: () => {
+      undone += 1
+      document.getElementById('undo-log')!.textContent = String(undone)
+    },
+  }
+  const on = (id: string, run: () => void) =>
+    document.getElementById(id)?.addEventListener('click', run)
+  on('toast-done', () => show('Changes saved'))
+  on('toast-info', () => show('Already being collected', { tone: 'info' }))
+  on('toast-problem', () =>
+    show('Could not save. Try again.', { tone: 'problem' }),
+  )
+  on('toast-undo', () => show('Project archived', { action: undo }))
+  on('toast-short', () => show('Gone soon', { timeout: 2000 }))
+  on('toast-in-modal', () => show('Item removed', { action: undo }))
+</script>
+
+<style is:global>
+  :root {
+    --sf-fixed-bottom: 3.5rem;
+  }
+
+  main {
+    padding-bottom: 4rem;
+  }
+</style>
+
+<style>
+  .fixed-bar {
+    box-sizing: border-box;
+    position: fixed;
+    inset: auto 0 0;
+    display: grid;
+    height: 3.5rem;
+    place-items: center;
+    border-top: 1px solid var(--sf-color-border);
+    background: var(--sf-color-surface);
+    color: var(--sf-color-muted);
+    font-size: 0.875rem;
+  }
+</style>

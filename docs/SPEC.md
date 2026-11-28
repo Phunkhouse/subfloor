@@ -14,7 +14,7 @@ Users: the owner and the agents working in the owner's projects. Public on npm u
 
 - Monorepo: `@subfloor/core` (tokens, CSS, behaviour), `@subfloor/react`, `@subfloor/astro`, the playground (docs, demos, test target), Changesets, an `eject` command.
 - Tokens; **Modal** and **Drawer/Sheet** with core, React and Astro adapters and a playground page each.
-- Playwright on Chromium and WebKit, desktop and phone, proving R-01 to R-10 (R-11 to R-15 in Phase 2, R-16 to R-21 in Phase 3). Desktop Firefox added 2026-11-27 (SUB-14).
+- Playwright on Chromium and WebKit, desktop and phone, proving R-01 to R-10 (R-11 to R-15 in Phase 2, R-16 to R-21 in Phase 3, R-22 to R-27 in Phase 4). Desktop Firefox added 2026-11-27 (SUB-14).
 - `AGENTS.md` / `CLAUDE.md`, and a rules snippet for consuming projects ([consumer-rules.md](consumer-rules.md)).
 
 **Confirmed** (owner, 2026-11-27; plan approved the same day).
@@ -29,9 +29,13 @@ Not included: a top sheet under the bar and submenus (SUB-7), drag-to-close (SUB
 
 Scope approved by the owner on 2026-11-27. **Decided** (owner, 2026-11-27; [0004](decisions/0004-native-popover-and-anchor-positioning.md)). A non-modal panel (`[popover][data-sf-popover]`, `createPopover`) and the action menu on it (`[data-sf-menu]`, `role="menu"`, `createMenu`), with React `Popover` and `Menu` and Astro `Popover.astro` and `Menu.astro`, a playground page and Playwright tests on all five projects. Requirements R-16 to R-21 below. Not included: select, listbox and combobox (SUB-12), submenus, opening on hover, a phone bottom-sheet variant.
 
+### Phase 4: Toast (SUB-10, built, in review)
+
+Scope approved by the owner on 2026-11-28. **Decided** (owner, 2026-11-28; [0005](decisions/0005-toast-in-the-top-layer-inside-the-open-modal.md)). A short floating message after Systerna's Snackbar: core `showToast` / `createToast` / `initToasts`, React `Toast`, Astro `Toast.astro` (server-rendered), a playground page and Playwright tests on all five projects. Requirements R-22 to R-27 below. Not included: stacked toasts or a queue, swipe to dismiss, other positions, promise toasts.
+
 ### Out of scope now
 
-Toast, Tabs and form fields are later phases (SUB-10 to SUB-12 in the [Vikunja backlog](BACKLOG.md)); the API must leave room for them. Publishing to npm, creating the npm organisation and pushing to a remote happen only on the owner's word. **Confirmed** (owner, 2026-11-27).
+Tabs and form fields are later phases (SUB-11 and SUB-12 in the [Vikunja backlog](BACKLOG.md)); the API must leave room for them. Publishing to npm, creating the npm organisation and pushing to a remote happen only on the owner's word. **Confirmed** (owner, 2026-11-27).
 
 ## Research: pitfalls found in the owner's projects
 
@@ -47,7 +51,7 @@ Read on 2026-11-27, read-only: Kultomat, Systerna, eucal, david-krapka, job-assi
 | Exit animations kept the element with a timeout (`CLOSE_MS`). | Kultomat `header-menu.tsx`. | R-06 |
 | Focus return and containment hand-rolled differently in every menu; Safari does not focus a clicked button, so "the previously focused element" is the body. | eucal `useFocusTrap`; david-krapka sets `inert` on `main` and `footer` by hand (and broke the skip link, WEB-002); Kultomat's phone menu closes on focus loss (WEB-001). | R-07, R-08 |
 | A fixed bottom bar hides the focused control. | Systerna WEB-001. | R-15 |
-| Dropdowns inside a panel are clipped by its `overflow`; a snackbar must sit above the bottom bar. | Systerna `clipEdges`, `Snackbar` with `popover="manual"`. | R-16, R-17; Toast later (SUB-10) |
+| Dropdowns inside a panel are clipped by its `overflow`; a snackbar must sit above the bottom bar. | Systerna `clipEdges`, `Snackbar` with `popover="manual"`. | R-16, R-17; R-22, R-23 |
 | jsdom has no `showModal`, so unit tests of dialogs test a fallback, not the browser. | Systerna `Dialog.tsx`. | D-03 |
 
 Components rebuilt in almost every project: dialog or sheet, phone menu, dropdown or menu, select, toast or snackbar, theme menu. They match the later phases.
@@ -77,6 +81,12 @@ Each is tested in `apps/playground/e2e/` (test names start with the id) on Chrom
 - **R-19 Menu keyboard (WAI-ARIA menu button).** Enter, Space, ↓ or a click open it with focus on the first item, ↑ on the last; ↓ ↑ wrap, Home End jump, typed letters move to the next matching item (a repeated letter cycles); Enter or Space choose; Escape closes and returns to the button; Tab closes and moves on. Disabled items (`aria-disabled="true"`) are skipped and cannot be chosen. A choice closes the menu (reason `select`), dispatches `sf:select` with the item's `data-value`, and links navigate.
 - **R-20 State.** The button's `aria-expanded` follows the panel; `sf:open-change` fires once per change with a reason (`escape`, `outside`, `toggle`, `select`, `tab`, `api`); `data-state` is `open`, `closing` or `closed`; closing is recorded at the moment the panel closes (`beforetoggle`), not when the browser's queued `toggle` event arrives (SUB-15). Opening animates from `@starting-style`, closing with `allow-discrete` transitions; none under reduced motion. The React adapter reports only the user's changes.
 - **R-21 Without JavaScript (popover).** The button opens and closes it (`popovertarget`), an outside press and Escape close it, and CSS places it beside the button. The menu's arrow keys, typeahead and `aria-expanded` need the script.
+- **R-22 Toast on top, clear of bars.** It is in the top layer (`popover="manual"`) at the bottom centre, above fixed bars, the page and open dialogs, and keeps clear of `--sf-fixed-bottom` and `env(safe-area-inset-bottom)`.
+- **R-23 Usable over a modal.** While a modal dialog is open, the core places the toast inside the topmost one (outside, the dialog makes it inert though it is drawn on top: Chromium, WebKit, Firefox, 2026-11-28) and moves it back when the dialog closes, also when a dialog opens or closes while the toast is shown.
+- **R-24 Announced, never focused.** `role="status"` for `done` and `info`, `role="alert"` for `problem`; the words appear 100 ms after the toast so screen readers that ignore a region inserted with its text still read them (an alert at once). Focus never moves to the toast.
+- **R-25 Time to read (WCAG 2.2.1).** `done` and `info` close after `timeout` (6 s by default), paused while the pointer is over the toast or focus is in it; a `problem` stays until closed.
+- **R-26 Closing.** The × button closes it; Escape closes it while focus is in it and does not close the dialog around it; focus that was in it goes back to where it came from. One `sf:toast-close` per toast with the reason (`timeout`, `button`, `escape`, `replaced`, `api`); the React adapter's `onClose` gets all but `api`.
+- **R-27 One at a time.** A new toast replaces the current one (`replaced`) and starts its own time; one optional action button beside the message. No motion under reduced motion. Without JavaScript a server-rendered toast still shows, fixed at the bottom, without its close button.
 
 ## Data and trust boundaries
 
@@ -98,6 +108,7 @@ No data is stored and nothing runs on a server. The packages run in the consumin
 - D-03 Dialog behaviour is tested in real browsers only; jsdom lacks `showModal`. Agent, 2026-11-27.
 - D-04 Records [0001](decisions/0001-one-native-dialog.md), [0002](decisions/0002-scroll-lock.md), [0003](decisions/0003-native-focus-containment.md). Agent, 2026-11-27; for the owner's review.
 - D-05 Record [0004](decisions/0004-native-popover-and-anchor-positioning.md): native popover and CSS anchor positioning for panels and menus. Scope approved by the owner, 2026-11-27.
+- D-06 Record [0005](decisions/0005-toast-in-the-top-layer-inside-the-open-modal.md): toast in the top layer, inside the open modal dialog. Scope approved by the owner, 2026-11-28.
 
 ## Known limitations and risks
 

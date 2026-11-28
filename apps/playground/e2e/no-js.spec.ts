@@ -143,3 +143,15 @@ test('popover: the button opens it below itself, Escape and an outside press clo
   await page.mouse.click(5, 5)
   await expect(panel).toBeHidden()
 })
+
+test('toast: a server-rendered toast shows at the bottom, without the close button', async ({
+  page,
+}) => {
+  await page.goto('/toast/sent/')
+  const t = page.locator('#sent-toast')
+  await expect(t).toBeVisible()
+  await expect(t).toHaveAttribute('role', 'status')
+  await expect(t.locator('.sf-toast__close')).toBeHidden()
+  const b = (await t.boundingBox())!
+  expect(b.y + b.height).toBeGreaterThan(page.viewportSize()!.height / 2)
+})

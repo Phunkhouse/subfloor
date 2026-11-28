@@ -1,0 +1,59 @@
+---
+/**
+ * A toast rendered on the server, for a message that belongs to the page as it arrives (after a
+ * form redirected here, for example). The core's `initToasts`, loaded below, shows it in the top
+ * layer and adds the timing and closing. Client scripts show toasts with `showToast` from
+ * `@subfloor/core` instead.
+ *
+ * Without JavaScript it still shows, fixed at the bottom; the close button and the timeout need
+ * the script.
+ */
+import type { HTMLAttributes } from 'astro/types'
+
+export interface Props extends HTMLAttributes<'div'> {
+  /** `done` (default), `info` or `problem` (stays until closed). */
+  tone?: 'done' | 'info' | 'problem'
+  /** Milliseconds before a `done` or `info` toast closes itself. Default 6000. */
+  timeout?: number
+  /** Accessible name of the close button. */
+  closeLabel?: string
+}
+
+const {
+  tone = 'done',
+  timeout,
+  closeLabel = 'Dismiss',
+  class: className,
+  ...rest
+} = Astro.props
+---
+
+<div
+  {...rest}
+  class:list={['sf-toast', className]}
+  data-sf-toast=""
+  data-tone={tone}
+  data-timeout={timeout}
+  role={tone === 'problem' ? 'alert' : 'status'}
+>
+  <span class="sf-toast__message">
+    <slot />
+  </span>
+  <button type="button" class="sf-toast__close" aria-label={closeLabel} hidden>
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M6 6l12 12M18 6 6 18"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      ></path>
+    </svg>
+  </button>
+</div>
+
+<script>
+  import { initToasts } from '@subfloor/core'
+
+  initToasts()
+  document.addEventListener('astro:page-load', () => initToasts())
+</script>

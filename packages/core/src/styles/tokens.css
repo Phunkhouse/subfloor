@@ -47,6 +47,12 @@
     --sf-radius-popover: var(--sf-radius-control);
     --sf-shadow-popover: 0 8px 24px rgb(0 0 0 / 16%);
     --sf-color-danger: #b91c1c;
+    --sf-color-success: #15803d;
+    --sf-toast-max-width: min(28rem, 100vw - 2 * var(--sf-overlay-gutter));
+    --sf-toast-offset: var(--sf-space-4);
+    --sf-toast-bg: #18181b;
+    --sf-toast-color: #fafafa;
+    --sf-radius-toast: var(--sf-radius-control);
 
     /* Fixed bars: set these to the heights of your fixed header and bottom bar, so Tab and
        in-page links keep focused controls and targets clear of them (R-15). */
@@ -71,6 +77,9 @@
       --sf-color-hover: rgb(255 255 255 / 8%);
       --sf-color-current: rgb(96 165 250 / 16%);
       --sf-color-danger: #f87171;
+      --sf-color-success: #4ade80;
+      --sf-toast-bg: #fafafa;
+      --sf-toast-color: #18181b;
     }
   }
 }
