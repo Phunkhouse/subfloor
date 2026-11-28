@@ -8,9 +8,10 @@ import { transitionsDone } from './transitions'
  * - its place: inside the topmost open modal dialog, because outside it the dialog makes the toast
  *   inert even though it is drawn on top (checked in Chromium, WebKit and Firefox), and back out
  *   when that dialog closes (R-22, R-23);
- * - the announcement: `role="status"` (or `alert` for a problem), with the words shown just after
- *   the toast, so screen readers that ignore a region inserted with its text still read them;
- *   focus never moves to it (R-24);
+ * - the announcement: `role="status"` (or `alert` for a problem). The visible words are there from
+ *   the first frame (so the toast appears at its final size) but hidden from screen readers; a
+ *   visually hidden copy inside the live region gets them just after, so screen readers that ignore
+ *   a region inserted with its text still read them. Focus never moves to it (R-24);
  * - time to read: `done` and `info` close after a timeout, paused while the pointer is over it or
  *   focus is in it; a `problem` stays (R-25);
  * - closing: the × button, Escape while focus is in it (not the dialog around it), focus back to
@@ -176,8 +177,15 @@ export function createToast(
   // A problem interrupts (alert); the others wait for a pause (status).
   element.setAttribute('role', lasts ? 'alert' : 'status')
   if (!lasts) {
-    message.hidden = true
-    announce = window.setTimeout(() => (message.hidden = false), ANNOUNCE_DELAY)
+    // Seen at once, heard once: the visible words stay put (no growing box), the copy is announced.
+    message.setAttribute('aria-hidden', 'true')
+    const copy = document.createElement('span')
+    copy.className = 'sf-toast__announce'
+    element.append(copy)
+    announce = window.setTimeout(
+      () => (copy.textContent = message.textContent),
+      ANNOUNCE_DELAY,
+    )
   }
   // Shown by the script: the close button (hidden without it) and the top layer.
   if (closeButton) closeButton.hidden = false
