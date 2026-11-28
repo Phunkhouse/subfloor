@@ -7,15 +7,18 @@ import Gallery from '../components/Gallery.astro'
 const install = `pnpm add @subfloor/core @subfloor/astro   # Astro
 pnpm add @subfloor/core @subfloor/react   # React / Next.js`
 
-const css = `/* Once, in the global stylesheet or layout */
-@import '@subfloor/core/tokens.css';
+const css = `/* Once, in the global stylesheet or layout. Each component brings its own styles. */
+@import '@subfloor/core/base.css';
+
+/* Plain script without the React or Astro components (showToast, createDialog...):
+   import what you use, or everything at once */
+@import '@subfloor/core/styles/toast.css';
 @import '@subfloor/core/components.css';`
 
 const tailwind = `/* With Tailwind v4: the mapping first, so its layer order applies */
 @import '@subfloor/core/tailwind.css';
 @import 'tailwindcss';
-@import '@subfloor/core/tokens.css';
-@import '@subfloor/core/components.css';`
+@import '@subfloor/core/base.css';`
 ---
 
 <Docs

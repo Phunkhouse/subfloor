@@ -8,6 +8,8 @@
  * Without JavaScript it still shows, fixed at the bottom; the close button and the timeout need
  * the script.
  */
+// This component's styles (decision 0006); the project imports `@subfloor/core/base.css` once.
+import '@subfloor/core/styles/toast.css'
 import type { HTMLAttributes } from 'astro/types'
 
 export interface Props extends HTMLAttributes<'div'> {

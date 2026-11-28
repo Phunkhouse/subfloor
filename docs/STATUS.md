@@ -2,21 +2,25 @@
 
 Rewritten, not appended, at every handoff and whenever the state changes materially. Under one page; history lives in Git.
 
-Updated: 2026-11-28 20:30 CET by Claude (agent)
+Updated: 2026-11-28 21:40 CET by Claude (agent)
 
 ## Goal
 
-The toast grew once it appeared (owner, 2026-11-28): its words arrived 100 ms after the box.
+SUB-18: base CSS once, component CSS brought by each component (decision 0006), agreed with the owner on 2026-11-28; before SUB-12 (form fields, Select first).
 
 ## State
 
-- Fixed on branch `fix/toast-no-growth`, PR open for the owner's review. The visible message is there from the first frame, hidden from screen readers (`aria-hidden`); a visually hidden copy `.sf-toast__announce` in the live region gets the text after 100 ms. New test: the toast's size in its first frame equals its size after the announcement (failed on all five projects before). Changeset: `@subfloor/core` patch.
-- Select plan agreed with the owner and recorded on SUB-12: a styled native `<select>` first (closed box in every browser, open list where `appearance: base-select` exists), a shared `.sf-caret` for Select and Popover/Menu buttons; a custom listbox later, only if needed.
-- On `main`: Modal, Drawer/Sheet, Mobile nav, Popover and Menu, Toast (with the review follow-up, #19), `keepFocusClear`, the Firefox project, the playground header menu. Live at https://phunkhouse.github.io/subfloor/. Not on npm. Backlog in Vikunja (`SUB`); SUB-17 open; Done policy `verified`.
+- Built on branch `feat/sub-18-component-css`, PR open for the owner's review.
+  - Core: `base.css` (tokens + `page.css`, the R-15 `scroll-padding` moved out of `mobile-nav.css`) and `styles/<component>.css`, exported as `./base.css` and `./styles/*`. `components.css` and `tokens.css` unchanged.
+  - React and Astro components import their own stylesheets; `@subfloor/react` declares the `.css` modules for TypeScript.
+  - The playground imports only `base.css` (pages that use `showToast` directly import `toast.css`).
+  - New `apps/next-fixture` (Next.js 16.4.6, App Router) and `pnpm test:next`, run in CI (`e2e.yml`).
+  - Decision 0006, SPEC, README, AGENTS commands, consumer rules with upgrade notes, changeset (minor, all three packages).
+- On `main`: Modal, Drawer/Sheet, Mobile nav, Popover and Menu, Toast, `keepFocusClear`, the Firefox project, the playground header menu. Live at https://phunkhouse.github.io/subfloor/. Not on npm. Backlog in Vikunja (`SUB`); SUB-17 open; SUB-12 plan recorded; Done policy `verified`.
 
 ## Next step
 
-Owner reviews this PR; then SUB-12 (form fields, Select first) on the owner's word.
+Owner reviews the SUB-18 PR. Then SUB-12 (Select first) on the owner's word.
 
 ## Blockers and open questions
 
@@ -26,8 +30,8 @@ Owner reviews this PR; then SUB-12 (form fields, Select first) on the owner's wo
 
 ## Last verified
 
-- Commands: `pnpm verify`; `pnpm test:e2e` (macOS); `toast.spec.ts` repeated in CI's image; the new size test on the old code.
-- Revision: `main` at `404cda0` plus this branch's changes.
-- Working tree: clean after the commit; the branch commit is the fix.
-- Result: verify passed (11 unit tests). E2E on macOS: 461 passed, 24 skipped. In CI's image: `toast.spec.ts` five times, 350 of 350. The size test failed on all five projects before the fix.
-- Not run: a real screen reader (the announcement copy is the standard live-region text insertion).
+- Commands: `pnpm verify`; `pnpm test:e2e` (macOS); `pnpm test:next`; both in CI's image; mutation checks (without its CSS import the Astro dialog fails the dialog tests, the React dialog fails the Next fixture).
+- Revision: `main` at `290a5f9` plus this branch's changes.
+- Working tree: clean after the commit; the branch commit is SUB-18.
+- Result: verify passed (11 unit tests). E2E on macOS and in CI's image: 461 passed, 24 skipped. `pnpm test:next`: 2 passed, on macOS and in CI's image.
+- Not run: a project's own unit tests with the new CSS imports (Jest/Vitest config varies; upgrade note in the changeset).

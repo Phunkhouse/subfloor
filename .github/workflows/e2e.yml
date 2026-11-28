@@ -34,9 +34,15 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm test:e2e
+      # The React adapter in the Next.js App Router: components bring their own CSS (decision 0006).
+      - run: pnpm test:next
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-report
-          path: apps/playground/playwright-report
+          path: |
+            apps/playground/playwright-report
+            apps/next-fixture/playwright-report
           retention-days: 7

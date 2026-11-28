@@ -6,6 +6,8 @@ import Filler from '../components/Filler.astro'
 import ReactToastDemo from '../components/ReactToastDemo'
 import TokenTable from '../components/TokenTable.astro'
 import { url } from '../lib/url'
+// The demo buttons use plain script (showToast): the page imports the toast's styles itself.
+import '@subfloor/core/styles/toast.css'
 
 const script = `import { showToast } from '@subfloor/core'
 

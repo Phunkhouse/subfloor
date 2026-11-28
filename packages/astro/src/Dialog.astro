@@ -5,6 +5,8 @@
  *   <button command="show-modal" commandfor="my-id">Open</button>
  * That works without JavaScript in browsers with Invoker Commands.
  */
+// This component's styles (decision 0006); the project imports `@subfloor/core/base.css` once.
+import '@subfloor/core/styles/dialog.css'
 import type { HTMLAttributes } from 'astro/types'
 
 export interface Props extends Omit<HTMLAttributes<'dialog'>, 'title'> {

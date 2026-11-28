@@ -4,6 +4,8 @@
  * the core's `createPopover`, loaded by the script below. Without JavaScript the button still
  * opens and closes it (`popovertarget`), and an outside press or Escape closes it.
  */
+// This component's styles (decision 0006); the project imports `@subfloor/core/base.css` once.
+import '@subfloor/core/styles/popover.css'
 import type { HTMLAttributes } from 'astro/types'
 
 export interface Props extends Omit<HTMLAttributes<'div'>, 'popover'> {

@@ -23,6 +23,8 @@ export default defineConfig([
   globalIgnores([
     '**/dist/**',
     '**/.astro/**',
+    '**/.next/**',
+    '**/next-env.d.ts',
     'docs/**',
     '**/test-results/**',
     '**/playwright-report/**',

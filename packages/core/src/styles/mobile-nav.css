@@ -3,12 +3,6 @@
  * Markup: see the playground's Mobile nav page. Requirements: docs/SPEC.md (R-11 to R-15).
  */
 @layer subfloor {
-  /* Tab, in-page links and scrollIntoView keep clear of fixed bars (R-15). Your own
-     `scroll-padding` wins over this; set the tokens instead to keep both in step. */
-  :root {
-    scroll-padding-block: var(--sf-fixed-top) var(--sf-fixed-bottom);
-  }
-
   .sf-dialog.sf-mobile-nav {
     width: min(var(--sf-mobile-nav-width), 100%);
   }
