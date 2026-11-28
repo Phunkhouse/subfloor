@@ -135,6 +135,11 @@ test.describe('short screen', () => {
     const m = await box(menu)
     expect(m.y).toBeGreaterThanOrEqual(0)
     expect(m.y + m.height).toBeLessThanOrEqual(320 + 1)
+    // Beside the button, not over it: Firefox would otherwise keep it on screen by covering the
+    // button (review of #14).
+    const t = await box(trigger)
+    const beside = m.y >= t.y + t.height - 1 || m.y + m.height <= t.y + 1
+    expect(beside).toBe(true)
     expect(
       await menu.evaluate((el) => el.scrollHeight > el.clientHeight + 1),
     ).toBe(true)
