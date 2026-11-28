@@ -158,7 +158,7 @@ test('R-18: an outside press closes it and leaves focus where it was pressed', a
   await page.locator('#background-button').click()
   await expect(panel).toBeHidden()
   await expect(trigger).not.toBeFocused()
-  expect(await changes(page)).toEqual(['true', 'false outside'])
+  await expect.poll(() => changes(page)).toEqual(['true', 'false outside'])
 })
 
 test('R-18: Escape closes it and gives focus back to the button, also in Safari', async ({
@@ -174,7 +174,7 @@ test('R-18: Escape closes it and gives focus back to the button, also in Safari'
   await page.keyboard.press('Escape')
   await expect(panel).toBeHidden()
   await expect(trigger).toBeFocused()
-  expect(await changes(page)).toEqual(['true', 'false escape'])
+  await expect.poll(() => changes(page)).toEqual(['true', 'false escape'])
 })
 
 test('R-18: pressing the button again closes it, without reopening', async ({
@@ -189,7 +189,7 @@ test('R-18: pressing the button again closes it, without reopening', async ({
   await trigger.click()
   await expect(panel).toBeHidden()
   await page.waitForTimeout(100)
-  expect(await changes(page)).toEqual(['true', 'false toggle'])
+  await expect.poll(() => changes(page)).toEqual(['true', 'false toggle'])
 })
 
 test('R-19: the menu keyboard: open on the first item, arrows, Home, End, letters, Escape', async ({
@@ -257,12 +257,9 @@ test('R-19: choosing an item closes the menu, reports it and gives focus back to
   await menu.getByRole('menuitem', { name: 'Delete' }).click()
   await expect(menu).toBeHidden()
   await expect(page.locator('#menu-log')).toHaveText('duplicate, delete')
-  expect(await changes(page)).toEqual([
-    'true',
-    'false select',
-    'true',
-    'false select',
-  ])
+  await expect
+    .poll(() => changes(page))
+    .toEqual(['true', 'false select', 'true', 'false select'])
 })
 
 test('R-19: Tab closes the menu and moves on', async ({ page }) => {
@@ -280,7 +277,7 @@ test('R-19: Tab closes the menu and moves on', async ({ page }) => {
   )
   expect(inMenu).toBe(false)
   await expect(trigger).not.toBeFocused()
-  expect(await changes(page)).toEqual(['true', 'false tab'])
+  await expect.poll(() => changes(page)).toEqual(['true', 'false tab'])
 })
 
 test('R-18: a mouse click on the button closes an open menu, without reopening it', async ({
@@ -298,16 +295,15 @@ test('R-18: a mouse click on the button closes an open menu, without reopening i
   await trigger.click()
   await expect(menu).toBeHidden()
   await page.waitForTimeout(100)
-  expect(await changes(page)).toEqual(['true', 'false toggle'])
+  await expect.poll(() => changes(page)).toEqual(['true', 'false toggle'])
 })
 
 test('R-19: a link item navigates', async ({ page }) => {
   await load(page)
   await page.locator('#actions-menu-trigger').click()
-  await page
-    .locator('#actions-menu')
-    .getByRole('menuitem', { name: 'Open the Modal page' })
-    .click()
+  const menu = page.locator('#actions-menu')
+  await expect(menu).toHaveAttribute('data-state', 'open')
+  await menu.getByRole('menuitem', { name: 'Open the Modal page' }).click()
   await expect(page).toHaveURL(/\/modal\/$/)
 })
 
@@ -338,6 +334,36 @@ test('R-20: aria-expanded follows the panel, and data-state passes through closi
   ).toEqual(['open', 'closing', 'closed'])
 })
 
+test('R-20: the state, aria-expanded and the event change at the moment it closes', async ({
+  page,
+}) => {
+  // The browser's toggle event is queued and can come late; until it did, the core still said
+  // open, and a quick ↑ after Escape focused an item of the hidden menu (SUB-15).
+  await load(page)
+  await page.locator('#actions-menu-trigger').click()
+  const menu = page.locator('#actions-menu')
+  await expect(menu).toHaveAttribute('data-state', 'open')
+  const right = await menu.evaluate((el) => {
+    const trigger = document.getElementById('actions-menu-trigger')!
+    const seen: string[] = []
+    el.addEventListener('sf:open-change', (e) =>
+      seen.push(String((e as CustomEvent).detail.open)),
+    )
+    ;(el as HTMLElement).hidePopover()
+    // Same task, before any queued event could run.
+    return {
+      state: el.dataset.state,
+      expanded: trigger.getAttribute('aria-expanded'),
+      seen,
+    }
+  })
+  expect(right).toEqual({
+    state: 'closing',
+    expanded: 'false',
+    seen: ['false'],
+  })
+})
+
 test('R-20: under reduced motion there is no transition', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await load(page)
@@ -366,6 +392,8 @@ test('R-20: React reports each user change once, and menu choices', async ({
   const menuTrigger = page.locator('#react-menu-trigger')
   const menu = page.locator('#react-menu')
   await menuTrigger.click()
+  // Open (and done moving) before clicking items, as in the other tests.
+  await expect(menu).toHaveAttribute('data-state', 'open')
   await menu.getByRole('menuitem', { name: 'Locked' }).click({ force: true })
   await expect(menu).toHaveAttribute('data-state', 'open')
   await menu.getByRole('menuitem', { name: 'Move', exact: true }).click()
