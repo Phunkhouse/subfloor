@@ -11,6 +11,7 @@
     "./MobileNav.astro": "./src/MobileNav.astro",
     "./Popover.astro": "./src/Popover.astro",
     "./Menu.astro": "./src/Menu.astro",
+    "./Toast.astro": "./src/Toast.astro",
     "./package.json": "./package.json"
   },
   "files": [

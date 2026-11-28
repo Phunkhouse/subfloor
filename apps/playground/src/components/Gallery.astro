@@ -40,8 +40,14 @@ const built = [
     text: 'A panel beside its button that nothing clips.',
     page: '/popover/',
   },
+  {
+    id: 'toast',
+    name: 'Toast',
+    text: 'A short message above everything, read out without taking focus.',
+    page: '/toast/',
+  },
 ]
-const planned = ['Toast', 'Tabs', 'Form fields']
+const planned = ['Tabs', 'Form fields']
 ---
 
 <section class="gallery" aria-labelledby="gallery-title">
@@ -63,7 +69,11 @@ const planned = ['Toast', 'Tabs', 'Form fields']
           <a href={url(c.page)}>{c.name}</a>
         </h3>
         <p>{c.text}</p>
-        {c.id === 'menu' ? (
+        {c.id === 'toast' ? (
+          <button type="button" id="gallery-open-toast">
+            Try it
+          </button>
+        ) : c.id === 'menu' ? (
           <Menu
             id="gallery-menu"
             label="Try it"
@@ -240,8 +250,22 @@ const planned = ['Toast', 'Tabs', 'Form fields']
     border-radius: 6px;
   }
 
+  [data-kind='toast'] .panel {
+    inset: auto 20% 10% 20%;
+    height: 22%;
+    border-radius: 6px;
+  }
+
   [data-kind='sheet'] .panel {
     inset: 50% 0 0;
     border-radius: 8px 8px 0 0;
   }
 </style>
+
+<script>
+  import { showToast } from '@subfloor/core'
+
+  document
+    .getElementById('gallery-open-toast')
+    ?.addEventListener('click', () => showToast('Changes saved'))
+</script>

@@ -1,0 +1,113 @@
+/*
+ * Toast: `.sf-toast[data-sf-toast][data-tone]` with `__message`, `__action` and `__close`.
+ * Markup: see the playground's Toast page. Requirements: docs/SPEC.md (R-22 to R-27).
+ */
+@layer subfloor {
+  /* Bottom centre, clear of a fixed bottom bar (`--sf-fixed-bottom`) and the home indicator
+     (R-22). Fixed without the script too; the script puts it in the top layer (`popover`). */
+  .sf-toast {
+    position: fixed;
+    inset: auto 0
+      calc(
+        var(--sf-fixed-bottom) + var(--sf-toast-offset) +
+          env(safe-area-inset-bottom, 0px)
+      );
+    z-index: 2147483647;
+    box-sizing: border-box;
+    display: flex;
+    gap: var(--sf-space-2);
+    align-items: center;
+    width: max-content;
+    max-width: var(--sf-toast-max-width);
+    margin: 0 auto;
+    padding: var(--sf-space-2) var(--sf-space-2) var(--sf-space-2)
+      var(--sf-space-4);
+    overflow: visible;
+    border: 0;
+    border-inline-start: 4px solid var(--_accent, var(--sf-color-success));
+    border-radius: var(--sf-radius-toast);
+    background: var(--sf-toast-bg);
+    box-shadow: var(--sf-shadow-popover);
+    color: var(--sf-toast-color);
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity var(--sf-duration-enter) var(--sf-ease-enter),
+      transform var(--sf-duration-enter) var(--sf-ease-enter);
+  }
+
+  .sf-toast[data-tone='info'] {
+    --_accent: var(--sf-color-focus);
+  }
+
+  .sf-toast[data-tone='problem'] {
+    --_accent: var(--sf-color-danger);
+  }
+
+  @starting-style {
+    .sf-toast {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+  }
+
+  .sf-toast[data-state='closing'] {
+    opacity: 0;
+    transform: translateY(0.5rem);
+    transition-duration: var(--sf-duration-exit);
+    transition-timing-function: var(--sf-ease-exit);
+  }
+
+  .sf-toast__message {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .sf-toast__action,
+  .sf-toast__close {
+    flex: none;
+    min-height: var(--sf-touch-target);
+    border: 0;
+    border-radius: var(--sf-radius-control);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .sf-toast__action {
+    padding: 0 var(--sf-space-3);
+    font-weight: var(--sf-title-weight);
+    text-decoration: underline;
+  }
+
+  .sf-toast__close {
+    display: inline-grid;
+    width: var(--sf-touch-target);
+    place-items: center;
+    padding: 0;
+  }
+
+  /* Without the script the close button cannot work: hidden until the script shows it. */
+  .sf-toast__close[hidden] {
+    display: none;
+  }
+
+  .sf-toast__action:hover,
+  .sf-toast__close:hover {
+    background: rgb(127 127 127 / 20%);
+  }
+
+  .sf-toast__action:focus-visible,
+  .sf-toast__close:focus-visible {
+    outline: 2px solid var(--sf-color-focus);
+    outline-offset: -2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sf-toast,
+    .sf-toast[data-state='closing'] {
+      transition: none;
+    }
+  }
+}

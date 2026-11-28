@@ -69,6 +69,12 @@ export const COMPONENTS = {
     react: ['src/Menu.tsx', 'src/Popover.tsx'],
     astro: ['src/Menu.astro'],
   },
+  toast: {
+    entry: './toast',
+    core: ['src/toast.ts', 'src/transitions.ts', 'src/styles/toast.css'],
+    react: ['src/Toast.tsx'],
+    astro: ['src/Toast.astro'],
+  },
 }
 const ALIASES = {
   modal: 'dialog',
@@ -76,6 +82,7 @@ const ALIASES = {
   sheet: 'dialog',
   nav: 'mobile-nav',
   dropdown: 'menu',
+  snackbar: 'toast',
 }
 
 /** The entry of the first component that lists a file: Dialog.tsx belongs to the dialog. */

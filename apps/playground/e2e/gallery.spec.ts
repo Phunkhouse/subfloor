@@ -26,3 +26,12 @@ test('overview: "Try it" opens the menu', async ({ page }) => {
   await page.keyboard.press('Escape')
   await expect(menu).toBeHidden()
 })
+
+test('overview: "Try it" shows a toast', async ({ page }) => {
+  await page.goto('/')
+  await page.waitForFunction(
+    () => !!document.querySelector('#gallery-menu[data-state]'),
+  )
+  await page.locator('#gallery-open-toast').click()
+  await expect(page.locator('.sf-toast[data-state="open"]')).toBeVisible()
+})
