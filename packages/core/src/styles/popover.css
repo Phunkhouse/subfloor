@@ -10,6 +10,9 @@
   .sf-popover {
     box-sizing: border-box;
     inset: auto;
+    /* Its natural width, so at a screen edge it flips to line up with the button's other end
+       instead of squeezing into the room left. */
+    width: max-content;
     min-width: var(--sf-popover-min-width);
     max-width: var(--sf-popover-max-width);
     max-height: var(--sf-popover-max-height);
@@ -23,10 +26,16 @@
     box-shadow: var(--sf-shadow-popover);
     color: var(--sf-color-text);
     position-area: block-end span-inline-end;
+    /* Natural size first: below, above, and each lined up with the other end of the button. Only
+       when it fits on neither side, a shorter panel that scrolls inside (R-17). */
     position-try-fallbacks:
       flip-block,
       flip-inline,
-      flip-block flip-inline;
+      flip-block flip-inline,
+      --sf-popover-fit-below,
+      --sf-popover-fit-below flip-inline,
+      --sf-popover-fit-above,
+      --sf-popover-fit-above flip-inline;
     opacity: 0;
     transform: translateY(-0.25rem);
     transition:
@@ -34,6 +43,26 @@
       transform var(--sf-duration-exit) var(--sf-ease-exit),
       overlay var(--sf-duration-exit) allow-discrete,
       display var(--sf-duration-exit) allow-discrete;
+  }
+
+  /* As tall as the room on that side (minus the offset on both ends), but not so small it is
+     useless: below that, the next option is tried. */
+  @position-try --sf-popover-fit-below {
+    position-area: block-end span-inline-end;
+    min-height: min(8rem, var(--sf-popover-max-height));
+    max-height: min(
+      var(--sf-popover-max-height),
+      calc(100% - 2 * var(--sf-popover-offset))
+    );
+  }
+
+  @position-try --sf-popover-fit-above {
+    position-area: block-start span-inline-end;
+    min-height: min(8rem, var(--sf-popover-max-height));
+    max-height: min(
+      var(--sf-popover-max-height),
+      calc(100% - 2 * var(--sf-popover-offset))
+    );
   }
 
   .sf-popover[data-placement='bottom-end'] {
