@@ -74,16 +74,37 @@ async function expectClosed(dialog: Locator) {
 const top = (page: Page, selector: string) =>
   page.locator(selector).evaluate((el) => el.getBoundingClientRect().top)
 
-/** A point on the backdrop: away from the dialog's box. */
+/**
+ * A point on the backdrop: the middle of the widest strip of screen outside the dialog's box,
+ * measured once the dialog has stopped moving. A drawer still sliding in used to give a point that
+ * ended up inside it: on a phone it leaves only 9 px of backdrop (SUB-16).
+ */
 async function backdropPoint(
   dialog: Locator,
 ): Promise<{ x: number; y: number }> {
+  await dialog.evaluate((el) =>
+    Promise.allSettled(el.getAnimations().map((a) => a.finished)),
+  )
   const box = await dialog.boundingBox()
   if (!box) throw new Error('dialog has no box')
-  const viewport = dialog.page().viewportSize()!
-  if (box.y > 20) return { x: viewport.width / 2, y: 10 }
-  if (box.x > 20) return { x: 10, y: viewport.height / 2 }
-  return { x: viewport.width - 10, y: viewport.height / 2 }
+  const { width, height } = dialog.page().viewportSize()!
+  const strips = [
+    { size: box.y, x: width / 2, y: box.y / 2 },
+    {
+      size: height - (box.y + box.height),
+      x: width / 2,
+      y: (box.y + box.height + height) / 2,
+    },
+    { size: box.x, x: box.x / 2, y: height / 2 },
+    {
+      size: width - (box.x + box.width),
+      x: (box.x + box.width + width) / 2,
+      y: height / 2,
+    },
+  ]
+  const widest = strips.reduce((a, b) => (b.size > a.size ? b : a))
+  if (widest.size < 2) throw new Error('no backdrop left to press')
+  return { x: widest.x, y: widest.y }
 }
 
 for (const c of cases) {
@@ -397,6 +418,23 @@ test.describe('Behaviour details', () => {
         () => (window as unknown as { states: string[] }).states,
       ),
     ).toEqual(['closing', 'closed'])
+  })
+
+  test('R-06: a closing that gets no frames still finishes', async ({
+    page,
+  }) => {
+    // A page that draws no frames (headless WebKit on Linux under load) never finishes the
+    // closing transition; the dialog stayed "closing" on the page (SUB-16). Frozen here on purpose.
+    await load(page, '/modal/')
+    const dialog = await open(page, cases[0]!)
+    await dialog.evaluate((el) => {
+      el.querySelector<HTMLButtonElement>('.sf-dialog__close')!.click()
+      // Same task: the closing transitions exist now; stop them where they are.
+      for (const animation of el.getAnimations()) animation.pause()
+    })
+    await expect(dialog).toHaveAttribute('data-state', 'closed', {
+      timeout: 2000,
+    })
   })
 
   test('R-06: under reduced motion it closes without waiting', async ({

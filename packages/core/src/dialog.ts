@@ -1,5 +1,6 @@
 import { currentOpener, trackPresses } from './opener'
 import { lockScroll } from './scroll-lock'
+import { transitionsDone } from './transitions'
 
 /**
  * Behaviour for a native modal `<dialog>`: Modal, Drawer and Sheet are this one dialog in
@@ -101,18 +102,6 @@ function listenOnDocument() {
         void controller.close('button')
     })
   }
-}
-
-/** Waits for the transitions and animations the closing state started on the dialog. */
-function transitionsDone(element: HTMLElement): Promise<void> {
-  // Reading a style applies the closing state, so its transitions exist when asked for.
-  void getComputedStyle(element).opacity
-  const running = (element.getAnimations?.() ?? []).filter(
-    (animation) => animation.effect?.getTiming().iterations !== Infinity,
-  )
-  return Promise.allSettled(
-    running.map((animation) => animation.finished),
-  ).then(() => undefined)
 }
 
 /** Whether a pointer event on the dialog landed on its backdrop rather than its box. */
