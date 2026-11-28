@@ -22,6 +22,7 @@ describe('eject', () => {
         'src/subfloor/dialog/dialog.ts',
         'src/subfloor/dialog/opener.ts',
         'src/subfloor/dialog/scroll-lock.ts',
+        'src/subfloor/dialog/transitions.ts',
       ].map((f) => join(...f.split('/'))),
     )
   })
@@ -62,6 +63,7 @@ describe('eject', () => {
       'mobile-nav.ts',
       'opener.ts',
       'scroll-lock.ts',
+      'transitions.ts',
     ])
     const nav = await readFile(join(dir, 'MobileNav.tsx'), 'utf8')
     expect(nav).toContain("from './mobile-nav'")

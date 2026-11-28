@@ -1,5 +1,6 @@
 import type { OpenChangeDetail } from './dialog'
 import { currentOpener, trackPresses } from './opener'
+import { transitionsDone } from './transitions'
 
 // Re-exported so an ejected popover adapter finds it next to the behaviour.
 export type { OpenChangeDetail } from './dialog'
@@ -41,16 +42,6 @@ interface ToggleLikeEvent extends Event {
 
 const controllers = new WeakMap<HTMLElement, PopoverController>()
 const live = new Set<PopoverController>()
-
-function transitionsDone(element: HTMLElement): Promise<void> {
-  void getComputedStyle(element).opacity
-  const running = (element.getAnimations?.() ?? []).filter(
-    (animation) => animation.effect?.getTiming().iterations !== Infinity,
-  )
-  return Promise.allSettled(running.map((a) => a.finished)).then(
-    () => undefined,
-  )
-}
 
 /** Adds the behaviour to a `[popover]` element, or returns the controller it already has. */
 export function createPopover(element: HTMLElement): PopoverController {
